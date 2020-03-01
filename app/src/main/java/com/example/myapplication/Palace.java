@@ -1,4 +1,5 @@
 package com.example.myapplication;
 
-public class Motor_29 {
+public class Palace {
+
 }

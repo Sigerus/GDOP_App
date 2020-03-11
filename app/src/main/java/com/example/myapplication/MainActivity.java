@@ -15,8 +15,6 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
-
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
     private int x;
@@ -24,18 +22,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private PointImageView pointImageView;
     String Touch;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = new TextView(this);
-//tv.setOnTouchListener(this);
-//setContentView(tv);
+        //tv.setOnTouchListener(this);
+        //setContentView(tv);
         tv = findViewById(R.id.textView3);
         pointImageView = (PointImageView) findViewById(R.id.imageView);
         pointImageView.setOnTouchListener(this);
-
     }
 
     @Override

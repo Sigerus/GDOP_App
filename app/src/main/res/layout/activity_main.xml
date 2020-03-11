@@ -15,10 +15,11 @@
         tools:layout_editor_absoluteY="318dp"
         tools:ignore="MissingConstraints" />
 
-    <com.example.PointImageView
+    <view
+        class="com.example.myapplication.MainActivity$PointImageView"
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         tools:layout_editor_absoluteX="140dp"
         tools:layout_editor_absoluteY="88dp"
         tools:src="@tools:sample/avatars"

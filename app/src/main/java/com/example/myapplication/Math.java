@@ -1,7 +1,10 @@
 package com.example.myapplication;
-/*
+
 public class Math {
-    public static void main(String[] args) {
+
+
+}
+   /* public static void main(String[] args) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
         int KX = 100; // конечная координата OX

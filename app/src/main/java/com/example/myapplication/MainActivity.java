@@ -15,12 +15,16 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
     private int x;
     private int y;
     private PointImageView pointImageView;
-    String Touch;
+    String Touch = "";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,14 +45,22 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         y = (int) event.getY();
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Touch = "X: " + x + "\n" + "Y: " + y;
-            pointImageView.setPoint(new Point(x, y));
+
+            if(pointImageView.PointList.size() != pointImageView.MaxSatCount)
+            {
+                Touch += "X: " + x + "\n" + "Y: " + y + "\n";
+                pointImageView.PointList.add(new Point(x, y));
+                pointImageView.invalidateImage();
+            }
+          //  pointImageView.setPoint(new Point(x, y));
         }
         tv.setText(Touch);
         return true;
     }
 
     public static class PointImageView extends androidx.appcompat.widget.AppCompatImageView{
+        public  final int MaxSatCount = 4;
+        public  ArrayList<Point> PointList = new ArrayList<Point>();
         private Point point;
         public PointImageView(Context context) {
             super(context);
@@ -62,6 +74,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             super(context, attrs, defStyle);
         }
 
+        public void invalidateImage()
+        {
+            invalidate();
+        }
         public void setPoint(Point point) {
             this.point = point;
             invalidate(); //Вот он
@@ -69,11 +85,24 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         @Override
         public void draw(Canvas canvas) {
             super.draw(canvas);
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            paint.setStrokeWidth(30f);
             if (point != null) {
-                Paint paint = new Paint();
+           /*   Paint paint = new Paint();
                 paint.setColor(Color.BLACK);
                 paint.setStrokeWidth(30f); //Вот оно
                 canvas.drawPoint(point.x, point.y, paint);
+                for (Point p : PointList)
+                {
+                    canvas.drawPoint(p.x, p.y, paint);
+                    invalidate();
+                }*/
+            }
+            for (Point p : PointList)
+            {
+                canvas.drawPoint(p.x, p.y, paint);
+                invalidate();
             }
         }
     }

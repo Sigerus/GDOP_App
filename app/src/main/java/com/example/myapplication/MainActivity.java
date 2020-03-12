@@ -14,14 +14,15 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
-    private int x;
-    private int y;
+    private int getX;
+    private int getY;
     private PointImageView pointImageView;
     String Touch = "";
 
@@ -41,20 +42,43 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        x = (int) event.getX();
-        y = (int) event.getY();
+        getX = (int) event.getX();
+        getY = (int) event.getY();
+        int CapturedPointIndex = 0;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN : {
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (pointImageView.PointList.size() != pointImageView.MaxSatCount) {
+                    Touch += "X: " + getX + "\n" + "Y: " + getY + "\n";
+                    pointImageView.PointList.add(new Point(getX, getY));
+                    pointImageView.invalidateImage();
+                }
+                //  pointImageView.setPoint(new Point(x, y));
 
-            if(pointImageView.PointList.size() != pointImageView.MaxSatCount)
-            {
-                Touch += "X: " + x + "\n" + "Y: " + y + "\n";
-                pointImageView.PointList.add(new Point(x, y));
-                pointImageView.invalidateImage();
+                tv.setText(Touch);
+                break;
             }
-          //  pointImageView.setPoint(new Point(x, y));
+            case MotionEvent.ACTION_MOVE:
+            {
+                for(int i=0;i<pointImageView.PointList.size();i++)
+                {
+                    int offsetX = java.lang.Math.abs(getX - pointImageView.PointList.get(i).x);
+                    int offsetY= java.lang.Math.abs(getY - pointImageView.PointList.get(i).y);
+                    if (offsetX <10 &&offsetY <10)
+                    {
+                    CapturedPointIndex =i;
+                    }
+                }
+                //Toast.makeText(this,"ACTION MOVE",Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            {
+                pointImageView.PointList.get(CapturedPointIndex).x = getX;
+                pointImageView.PointList.get(CapturedPointIndex).y = getY;
+                break;
+            }
         }
-        tv.setText(Touch);
         return true;
     }
 

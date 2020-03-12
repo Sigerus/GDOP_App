@@ -21,9 +21,12 @@ import java.util.List;
 
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
+    TextView tv2;
     private int getX;
     private int getY;
     private PointImageView pointImageView;
+    private int pointImageHeight = 0;
+    private int pointImageWidth = 0;
     String Touch = "";
 
 
@@ -32,10 +35,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = new TextView(this);
+        tv2 = new TextView(this);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
         tv = findViewById(R.id.textView3);
+        tv2 = findViewById(R.id.textView);
         pointImageView = (PointImageView) findViewById(R.id.imageView);
+
         pointImageView.setOnTouchListener(this);
     }
 
@@ -45,6 +51,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         getX = (int) event.getX();
         getY = (int) event.getY();
         int CapturedPointIndex = 0;
+        boolean Captured = false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN : {
 
@@ -54,7 +61,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     pointImageView.invalidateImage();
                 }
                 //  pointImageView.setPoint(new Point(x, y));
-
                 tv.setText(Touch);
                 break;
             }
@@ -64,18 +70,38 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 {
                     int offsetX = java.lang.Math.abs(getX - pointImageView.PointList.get(i).x);
                     int offsetY= java.lang.Math.abs(getY - pointImageView.PointList.get(i).y);
-                    if (offsetX <10 &&offsetY <10)
+                    if (offsetX < 30 && offsetY < 30)
                     {
-                    CapturedPointIndex =i;
+                        if(getX<0 || getX > pointImageView.getMaxWidth())
+                        {
+                            pointImageView.PointList.get(i).x = 0;
+                        }
+                        else if(getY<0 || getY > pointImageView.getMaxHeight())
+                        {
+                            pointImageView.PointList.get(i).y = 0;
+                        }
+                        else
+                        {
+                            pointImageView.PointList.get(i).x = getX;
+                            pointImageView.PointList.get(i).y = getY;
+                        }
+                        pointImageView.invalidateImage();
                     }
                 }
+                tv2.setText(getX + "\n" + getY);
                 //Toast.makeText(this,"ACTION MOVE",Toast.LENGTH_SHORT).show();
                 break;
             }
             case MotionEvent.ACTION_UP:
             {
-                pointImageView.PointList.get(CapturedPointIndex).x = getX;
-                pointImageView.PointList.get(CapturedPointIndex).y = getY;
+                if(Captured)
+                {
+                    pointImageView.PointList.get(CapturedPointIndex).x = getX;
+                    pointImageView.PointList.get(CapturedPointIndex).y = getY;
+                    pointImageView.invalidateImage();
+                }
+              //  pointImageView.PointList.get(CapturedPointIndex).x = getX;
+              //  pointImageView.PointList.get(CapturedPointIndex).y = getY;
                 break;
             }
         }
@@ -97,6 +123,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         public PointImageView(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
         }
+
 
         public void invalidateImage()
         {

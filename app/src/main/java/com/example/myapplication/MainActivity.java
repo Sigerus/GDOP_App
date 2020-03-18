@@ -6,13 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -30,8 +27,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv = new TextView(this);
-//tv.setOnTouchListener(this);
-//setContentView(tv);
         tv = findViewById(R.id.textView3);
         pointImageView = (PointImageView) findViewById(R.id.imageView);
         pointImageView.setOnTouchListener(this);
@@ -76,32 +71,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             if (point != null) {
                 Paint paint = new Paint();
                 paint.setColor(Color.BLACK);
-                paint.setStrokeWidth(30f); //Вот оно
+                paint.setStrokeWidth(50f); //Вот оно
                 canvas.drawPoint(point.x, point.y, paint);
             }
         }
     }
 
-/**static class DrawView extends View {
- MainActivity Koord = new MainActivity();
- Paint p;
- Rect rect;
-
- public DrawView(Context context) {
- super(context);
- p = new Paint();
- rect = new Rect();
- }
-
- @Override
- protected void onDraw(Canvas canvas) {
- p.setColor(Color.RED);
- canvas.drawPoint(Koord.x,Koord.y , p);
-
- }
-
-
- }*/
 }
 
 

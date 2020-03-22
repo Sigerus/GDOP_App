@@ -8,26 +8,29 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class start extends AppCompatActivity {
+public class start2 extends AppCompatActivity {
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+        setContentView(R.layout.start2);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
     }
-
-
-
-    public void ne(View view) {
-        Intent intent = new Intent (start.this,start1.class);
+    public void d(View View)
+    {
+        Intent intent = new Intent (start2.this,start3.class);
         startActivity(intent);
     }
 
-    public void Back(View view) {
-      finish();
+    public void rd(View View)
+    {
+        Intent intent = new Intent (start2.this,start3.class);
+        startActivity(intent);
     }
 
+    public void back(View View)
+    {
+        finish();
+    }
 }
-

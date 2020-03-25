@@ -1,7 +1,8 @@
 package com.example.myapplication;
 
 public class Math {
-    public void main(String[] args) {
+
+    public double[][] main(String[] args) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
         int KX = 100; // конечная координата OX
@@ -12,9 +13,9 @@ public class Math {
         int[][] SatPos = new int[n][2];
         double [][] R = new double [n][2];
         double[][] Grad = new double[KY - OY][KX - OX];
-        if (n < 0) {
+        /*if (n < 0) {
             System.exit(1); // or break;
-        }
+        }*/
         for (int i = 0; i < KX; i = i + h) {
             for (int j = 0; j < KY; j = j + h) {
                 while (k <= n) {
@@ -27,7 +28,7 @@ public class Math {
             }
 
         }
-
+        return Grad;
 
     }
 

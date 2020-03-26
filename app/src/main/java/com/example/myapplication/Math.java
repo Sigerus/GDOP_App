@@ -10,6 +10,7 @@ public class Math {
         int h = 5; // шаг
         int n = 3; // количество маяков
         int k = 0;
+
         int[][] SatPos = new int[n][2];
         double [][] R = new double [n][2];
         double[][] Grad = new double[KY - OY][KX - OX];

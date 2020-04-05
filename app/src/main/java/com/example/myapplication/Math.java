@@ -2,13 +2,16 @@ package com.example.myapplication;
 
 public class Math {
 
+private MainActivity Main;
+    private MainActivity.PointImageView pointImageView;
+
     public double[][] main(String[] args) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
         int KX = 100; // конечная координата OX
         int KY = 100; // конечная координата OY
-        int h = 5; // шаг
-        int n = 3; // количество маяков
+        int h = 1; // шаг
+        int n = Main.Key; // количество маяков
         int k = 0;
 
         int[][] SatPos = new int[n][2];
@@ -20,8 +23,8 @@ public class Math {
         for (int i = 0; i < KX; i = i + h) {
             for (int j = 0; j < KY; j = j + h) {
                 while (k <= n) {
-                    R[k][0] = ((i - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(i - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(j - SatPos[1][k], 20))));
-                    R[k][1] = ((k - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(i - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(j - SatPos[1][k], 20))));
+                    R[k][0] = ((i - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(i - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(j - SatPos[1][k], 2))));
+                    R[k][1] = ((k - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(i - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(j - SatPos[1][k], 2))));
                     k += 1;
                 }
                 Grad[j + 1][i + 1] = java.lang.Math.sqrt(Trace(Multi(R, FunT(R))));

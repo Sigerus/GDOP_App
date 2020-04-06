@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -33,6 +34,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     String Touch = "";
+    String MoveTouch = "";
     public int Key = 0;
 
 
@@ -43,6 +45,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         setContentView(R.layout.activity_main);
         tv = new TextView(this);
         tv2 = new TextView(this);
+        tv = findViewById(R.id.textView3);
+        tv2 = findViewById(R.id.textView);
         Beacons = findViewById(R.id.editText3);
         Ok = findViewById(R.id.button);
         Plus = findViewById(R.id.button2);
@@ -50,8 +54,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         //tv.setOnTouchListener(this);
         //setContentView(tv);
 
-        tv = findViewById(R.id.textView3);
-        tv2 = findViewById(R.id.textView);
         pointImageView = (PointImageView) findViewById(R.id.imageView);
 
         pointImageView.setOnTouchListener(this);
@@ -96,8 +98,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Key += 1;
     }*/
 
-
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
@@ -140,7 +140,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         pointImageView.invalidateImage();
                     }
                 }
-                tv2.setText(getX + "\n" + getY);
+                MoveTouch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
+                tv.setText(MoveTouch);
                 //Toast.makeText(this,"ACTION MOVE",Toast.LENGTH_SHORT).show();
                 break;
             }

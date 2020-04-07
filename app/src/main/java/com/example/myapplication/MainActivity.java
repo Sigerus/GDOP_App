@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
+
 import java.util.ArrayList;
 
 import static java.lang.Math.abs;
@@ -91,6 +94,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 Math math = new Math();
                 double[][] Gdop = new double[100][100];
                 Gdop = math.main(pointImageView.PointList);
+                //PointImageView.DrawGdop(Gdop);
+                //pointImageView.invalidateImage();
                 //math.main(pointImageView.PointList);
 
             }
@@ -190,6 +195,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
 
         public void DrawGdop(double[][] Gdop) {
+            //super.draw(canvas);
             for (int i = 0; i < Gdop.length; i++)
                 for (int j = 0; j < Gdop[0].length; i++)
                 {
@@ -206,8 +212,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     {
                         paint.setColor(Color.RED);
                     }
-
-                    
+                    paint.setStrokeWidth(10f);
+                    //canvas.drawPoint(50, 1500, paint);
+                    //invalidate();
+                    Canvas S = new Canvas;
+                    S.drawPoint(50, 1500, paint);
+                    invalidate();
 
                 }
         }

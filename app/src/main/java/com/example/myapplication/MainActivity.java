@@ -94,6 +94,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 Math math = new Math();
                 double[][] Gdop = new double[100][100];
                 Gdop = math.main(pointImageView.PointList);
+                pointImageView.DrawGdop(Gdop);
 
                 //PointImageView.DrawGdop(Gdop);
                 //pointImageView.invalidateImage();
@@ -216,7 +217,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     paint.setStrokeWidth(10f);
                     //canvas.drawPoint(50, 1500, paint);
                     //invalidate();
-                    Canvas S = new Canvas;
+                    Canvas S = new Canvas();
                     S.drawPoint(50, 1500, paint);
                     invalidate();
 

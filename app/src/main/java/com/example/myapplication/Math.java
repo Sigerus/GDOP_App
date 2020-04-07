@@ -19,8 +19,8 @@ private MainActivity Main;
         int k = 0; // счёт
         int[][] SatPos = new int[2][PointList.size()];
         double[][] H = new double [PointList.size()][2];
-        double[][] Gdop = new double[KY - OY ][KX - OX ];
-        double[] R = new double [KX];
+        double[][] Gdop = new double[KY - OY][KX - OX];
+
 
 
         for (int i = 0; i < PointList.size(); i++)
@@ -41,7 +41,7 @@ private MainActivity Main;
                     k += 1;
                 }
                 k = 0;
-                Gdop[y ][x ] = java.lang.Math.sqrt(Trace(АгтInv(Multi(H, FunT(H)))));
+                Gdop[y][x] = java.lang.Math.sqrt(Trace(АгтInv(Multi(H, FunT(H)))));
 
             }
 
@@ -52,18 +52,6 @@ private MainActivity Main;
 
 
 /*------------------------------------------Траспонирование матрицы-----------------------------------------*/
-/*public double [][] FunT(double[][] A) {
-    int N = A.length;
-    int M = A[0].length;
-    double [][] An = new double [N][M];
-    for (int i = 0; i < N; i++ )
-        for (int j = i + 1; j < M; j++){
-            double temp = An[i][j];
-            An[i][j] = An[j][i];
-            An[j][i] = temp;
-        }
-    return An;
-}*/
 public double [][] FunT(double[][] A) {
     int Col = A.length; //количество строк
     int Row = A[0].length; //количество столбцов в i-той строке
@@ -84,14 +72,14 @@ public double[][] Multi(double[][] A, double[][] B) {
     int M = A[0].length;
     int N1 = B.length;
     int M1 = B[0].length;
-    if (M != N1) {
-        System.exit(1);
-    }
+    //if (M != N1) {
+     //   System.exit(1);
+    //}
     double[][] An = new double[N][M1];
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M1; j++) {
             An[i][j] = 0;
-            for (int s = 0; s < M; s++) {
+            for (int s = 0; s < N1; s++) {
                 An[i][j] += A[i][s] * B[s][j];
             }
         }

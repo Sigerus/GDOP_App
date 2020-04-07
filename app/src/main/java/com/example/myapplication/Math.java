@@ -1,45 +1,58 @@
 package com.example.myapplication;
 
+import android.graphics.Point;
+
+import java.util.ArrayList;
+
 public class Math {
 
 private MainActivity Main;
     private MainActivity.PointImageView pointImageView;
 
-    public double[][] main(String[] args) {
+    public double[][] main(ArrayList<Point> PointList) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
         int KX = 100; // конечная координата OX
         int KY = 100; // конечная координата OY
         int h = 1; // шаг
-        int n = Main.Key; // количество маяков
-        int k = 0;
+        //int n = Main.Key; // количество маяков
+        int k = 0; // счёт
+        int[][] SatPos = new int[2][PointList.size()];
+        double[][] H = new double [PointList.size()][2];
+        double[][] Gdop = new double[KY - OY ][KX - OX ];
+        double[] R = new double [KX];
 
-        int[][] SatPos = new int[n][2];
-        double [][] R = new double [n][2];
-        double[][] Grad = new double[KY - OY][KX - OX];
+
+        for (int i = 0; i < PointList.size(); i++)
+        {
+            SatPos[0][i] = PointList.get(i).x;
+            SatPos[1][i] = PointList.get(i).y;
+        }
+
+
         /*if (n < 0) {
             System.exit(1); // or break;
         }*/
-        for (int i = 0; i < KX; i = i + h) {
-            for (int j = 0; j < KY; j = j + h) {
-                while (k <= n) {
-                    R[k][0] = ((i - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(i - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(j - SatPos[1][k], 2))));
-                    R[k][1] = ((k - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(i - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(j - SatPos[1][k], 2))));
+        for (int x = 0; x < KX; x = x + h) {
+            for (int y = 0; y < KY; y = y + h) {
+                while (k < PointList.size()) {
+                    H[k][0] = ((x - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(x - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(y - SatPos[1][k], 2))));
+                    H[k][1] = ((y - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(x - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(y - SatPos[1][k], 2))));
                     k += 1;
                 }
-                Grad[j + 1][i + 1] = java.lang.Math.sqrt(Trace(Multi(R, FunT(R))));
+                k = 0;
+                Gdop[y ][x ] = java.lang.Math.sqrt(Trace(АгтInv(Multi(H, FunT(H)))));
 
             }
 
         }
-        return Grad;
+        return Gdop;
 
     }
 
 
-
 /*------------------------------------------Траспонирование матрицы-----------------------------------------*/
-public double [][] FunT(double[][] A) {
+/*public double [][] FunT(double[][] A) {
     int N = A.length;
     int M = A[0].length;
     double [][] An = new double [N][M];
@@ -50,7 +63,21 @@ public double [][] FunT(double[][] A) {
             An[j][i] = temp;
         }
     return An;
+}*/
+public double [][] FunT(double[][] A) {
+    int Col = A.length; //количество строк
+    int Row = A[0].length; //количество столбцов в i-той строке
+    double [][] An = new double [Row][Col];
+
+    for(int i = 0; i < Col; ++i)
+        for(int j = 0; j < Row; ++j)
+            An[j][i] = A[i][j];
+
+
+        return An;
+
 }
+
 /*------------------------------------------Перемножение матриц-----------------------------------------*/
 public double[][] Multi(double[][] A, double[][] B) {
     int N = A.length;

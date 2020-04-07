@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -71,7 +72,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     Key += Integer.parseInt(Beacons.getText().toString());
                     Beacons.setKeyListener(null);
                     v.setClickable(false);
-                    Beacons.setText("");
+                   // Beacons.setText("");
                 }
             }
         });
@@ -86,8 +87,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ////////////////////////////////////////////////////
-                tv.setText("Coming soon");
+                tv.setText("Какая-нибудь хуйня");
+                Math math = new Math();
+                double[][] Gdop = new double[100][100];
+                Gdop = math.main(pointImageView.PointList);
+                //math.main(pointImageView.PointList);
+
             }
         });
 
@@ -184,10 +189,32 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             invalidate();
         }
 
-        /*public void setPoint(Point point) {
-            this.point = point;
-            invalidate(); //Вот он
-        }*/
+        public void DrawGdop(double[][] Gdop) {
+            for (int i = 0; i < Gdop.length; i++)
+                for (int j = 0; j < Gdop[0].length; i++)
+                {
+                    Paint paint = new Paint();
+                    if (Gdop[i][j] < 0.5)
+                    {
+                        paint.setColor(Color.GREEN);
+                    }
+                    else if (Gdop[i][j] > 0.5 || Gdop[i][j] < 0.7)
+                    {
+                        paint.setColor(Color.YELLOW);
+                    }
+                    else
+                    {
+                        paint.setColor(Color.RED);
+                    }
+
+                    
+
+                }
+        }
+
+
+
+
 
         @Override
         public void draw(Canvas canvas) {

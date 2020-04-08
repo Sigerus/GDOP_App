@@ -94,7 +94,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 Math math = new Math();
                 double[][] Gdop = new double[100][100];
                 Gdop = math.main(pointImageView.PointList);
-                pointImageView.DrawGdop(Gdop);
+                pointImageView.DrawGdop(math.main(pointImageView.PointList));
 
                 //PointImageView.DrawGdop(Gdop);
                 //pointImageView.invalidateImage();

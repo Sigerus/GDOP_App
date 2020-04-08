@@ -41,7 +41,7 @@ private MainActivity Main;
                     k += 1;
                 }
                 k = 0;
-                Gdop[y][x] = java.lang.Math.sqrt(Trace(АгтInv(Multi(H, FunT(H)))));
+                Gdop[x][y] = java.lang.Math.sqrt(Trace(АгтInv(Multi(H, FunT(H)))));
 
             }
 

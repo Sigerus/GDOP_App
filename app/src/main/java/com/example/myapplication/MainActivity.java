@@ -185,29 +185,19 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 String[] massX=new String[ pointImageView.PointList.size()];
                 String[] massY=new String[ pointImageView.PointList.size()];
                 //String n="/n";
-                for (int i = 0; i < pointImageView.PointList.size(); i++) {
-                    massX[i] = Integer.toString(pointImageView.PointList.get(i).x);
-                    massY[i] = Integer.toString(pointImageView.PointList.get(i).y);
-
-                }
 
                 try {
                     FileOutputStream fos = new FileOutputStream(myExternalFile);
-                    FileOutputStream fos2 = new FileOutputStream(myExternalFile2);
+                  //  FileOutputStream fos2 = new FileOutputStream(myExternalFile2);
                     for (int i = 0; i < pointImageView.PointList.size(); i++) {
-
-                        fos.write((massX[i]).getBytes());
+                        massX[i] = Integer.toString(pointImageView.PointList.get(i).x);
+                        massY[i] = Integer.toString(pointImageView.PointList.get(i).y);
+                        fos.write((massX[i]+" " + massY[i]+ "\n").getBytes() );
                         //fos.write(massY[i].getBytes());
-
-
-                        fos2.write((massY[i]).getBytes());
-
-
-
-
+                       // fos2.write((massY[i]+"\n").getBytes());
                     }
                     fos.close();
-                    fos2.close();
+                  //  fos2.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -223,7 +213,31 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 masX=new int[pointImageView.PointList.size()];
                 masY=new int[pointImageView.PointList.size()];
 
+
+
                 try {
+                    FileInputStream fin = new FileInputStream(myExternalFile);
+
+                    byte[] bytes = new byte[fin.available()];
+                    fin.read(bytes);
+                    String Alltext = new String (bytes);
+                    String[] ParsedText = Alltext.split("\n");
+                    for(int i =0;i<ParsedText.length;i++)
+                    {
+                        pointImageView.PointList.get(i).x=Integer.parseInt(ParsedText[i].split(" ")[0]);
+                        pointImageView.PointList.get(i).y=Integer.parseInt(ParsedText[i].split(" ")[1]);
+                    }
+                }
+          /*      for(int i=0;i<pointImageView.PointList.size();i++){
+                     = masX[i];
+                     = masY[i];
+                }*/
+                catch(IOException ex) {
+
+                  //  Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                pointImageView.invalidateImage();
+  /*              try {
                     FileInputStream fis = new FileInputStream(myExternalFile);
                     DataInputStream in = new DataInputStream(fis);
                     BufferedReader br =
@@ -276,15 +290,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
 
-                for(int i=0;i<pointImageView.PointList.size();i++){
-                    getX=masX[i];
-                    getY=masY[i];
-                    pointImageView.PointList.get(i).x = getX;
-                    pointImageView.PointList.get(i).y = getY;
-                }
-                pointImageView.invalidateImage();
+
                 //inputText.setText(myData);
                 //response.setText("SampleFile.txt data retrieved from Internal Storage...");
             }

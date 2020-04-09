@@ -9,7 +9,7 @@ public class Math {
 private MainActivity Main;
     private MainActivity.PointImageView pointImageView;
 
-    public double[][] main(ArrayList<Point> PointList) {
+    public double [][] main(ArrayList<Point> PointList) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
         int KX = 1315; // конечная координата OX
@@ -42,6 +42,7 @@ private MainActivity Main;
                 }
                 k = 0;
                 Gdop[y][x] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
+                //return Gdop[y][x];
 
             }
 

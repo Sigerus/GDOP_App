@@ -71,7 +71,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         pointImageView.setOnTouchListener(this);
         //////////////////////////
 
-        /*
+
 
         drawingImageView = (ImageView) this.findViewById(R.id.imageView);
         Bitmap bitmap = Bitmap.createBitmap((int) getWindowManager()
@@ -95,7 +95,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
             canvas.drawLine(0, i, pointImageWidth, i, paint);
         for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
-            canvas.drawLine(i, 0, i, pointImageHeight, paint); */
+            canvas.drawLine(i, 0, i, pointImageHeight, paint);
 
 
 
@@ -131,7 +131,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             public void onClick(View v) {
                 tv.setText("Какая-нибудь хуйня");
                 Math math = new Math();
-                double[][] Gdop;
+                double [][] Gdop;
                 Gdop = math.main(pointImageView.PointList);
                 pointImageView.DrawGdop(Gdop);
 
@@ -241,7 +241,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             //super.draw();
             Canvas S = new Canvas();
             for (int i = 0; i < Gdop.length; i++)
-                for (int j = 0; j < Gdop[0].length; i++)
+                for (int j = 0; j < Gdop[0].length; j++)
                 {
                     Paint paint = new Paint();
                     if (Gdop[i][j] < 0.5)
@@ -294,6 +294,30 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
     }
 
+    /*public void DrawGdop(double Gdop, ) {
+            //super.draw();
+            Canvas S = new Canvas();
+                    Paint paint = new Paint();
+                    if (Gdop < 0.5)
+                    {
+                        paint.setColor(Color.GREEN);
+                    }
+                    else if (Gdop > 0.5 || Gdop < 0.7)
+                    {
+                        paint.setColor(Color.YELLOW);
+                    }
+                    else
+                    {
+                        paint.setColor(Color.RED);
+                    }
+                    paint.setStrokeWidth(10f);
+
+
+                    S.drawPoint(i+5, j+5, paint);
+                    invalidate();
+
+                }
+        }
     /*public static class Zalupa extends androidx.appcompat.widget.AppCompatImageView {
 
 

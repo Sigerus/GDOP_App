@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="textView" type="id" />
+    <item name="button" type="id" />
+    <item name="button1" type="id" />
+    <item name="button2" type="id" />
+    <item name="button3" type="id" />
+    <item name="toolbar" type="id" />
+    <item name="fab" type="id" />
+    <item name="constraintLayout" type="id" />
+    <item name="textView8" type="id" />
+    <item name="editText2" type="id" />
+    <item name="textView7" type="id" />
+    <item name="imageView" type="id" />
 </resources>

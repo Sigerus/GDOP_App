@@ -6,15 +6,21 @@
     app:startDestination="@id/nav_start">
 
     <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.myapplication.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.jijma.ui.home.HomeFragment"
+        android:name="com.example.myapplication.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home">
 
     </fragment>
     <fragment
         android:id="@+id/nav_start"
-        android:name="com.example.jijma.ui.Start.StartFragment"
+        android:name="com.example.myapplication.ui.Start.StartFragment"
         android:label="@string/home_second"
         tools:layout="@layout/activity_start">
         <action
@@ -26,15 +32,10 @@
             app:argType="string" />
     </fragment>
 
-    <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.jijma.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.example.jijma.ui.slideshow.SlideshowFragment"
+        android:name="com.example.myapplication.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 </navigation>

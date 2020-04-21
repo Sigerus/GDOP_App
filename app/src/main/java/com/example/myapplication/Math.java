@@ -54,17 +54,11 @@ private MainActivity Main;
 
 /*------------------------------------------Траспонирование матрицы-----------------------------------------*/
 public static double [][] FunT(double[][] A) {
-    int Col = A.length; //количество строк
-    int Row = A[0].length; //количество столбцов в i-той строке
-    double [][] An = new double [Row][Col];
-
-    for(int i = 0; i < Col; ++i)
-        for(int j = 0; j < Row; ++j)
+    double[][] An = new double[A[0].length][A.length];
+    for (int i = 0; i < A.length; ++i)
+        for (int j = 0; j < A[0].length; ++j)
             An[j][i] = A[i][j];
-
-
-        return An;
-
+    return An;
 }
 
 /*------------------------------------------Перемножение матриц-----------------------------------------*/
@@ -89,63 +83,6 @@ public static double[][] Multi(double[][] A, double[][] B) {
     return An;
 }
  /*------------------------------------------Нахождение обратной матрицы-----------------------------------------*/
-/*public double[][] АгтInv(double[][] A) {
-    int N = A.length;
-    double temp;
-    double [][] An = new double [N][N];
-
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < N; j++)
-        {
-            An[i][j] = 0d;
-
-            if (i == j)
-                An[i][j] = 1d;
-        }
-
-    for (int k = 0; k < N; k++)
-    {
-        temp = A[k][k];
-
-        for (int j = 0; j < N; j++)
-        {
-            A[k][j] /= temp;
-            An[k][j] /= temp;
-        }
-
-        for (int i = k + 1; i < N; i++)
-        {
-            temp = A[i][k];
-
-            for (int j = 0; j < N; j++)
-            {
-                A[i][j] -= A[k][j] * temp;
-                An[i][j] -= An[k][j] * temp;
-            }
-        }
-    }
-
-    for (int k = N - 1; k > 0; k--)
-    {
-        for (int i = k - 1; i >= 0; i--)
-        {
-            temp = A[i][k];
-
-            for (int j = 0; j < N; j++)
-            {
-                A[i][j] -= A[k][j] * temp;
-                An[i][j] -= An[k][j] * temp;
-            }
-        }
-    }
-
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < N; j++)
-            A[i][j] = An[i][j];
-
-    return A;
-}*/
-
     public static double[][] invert(double a[][])
     {
         int n = a.length;
@@ -167,7 +104,7 @@ public static double[][] Multi(double[][] A, double[][] B) {
         // Perform backward substitutions
         for (int i=0; i<n; ++i)
         {
-            x[n-1][i] = b[index[n-1]][i]/a[index[n-1]][n-1];
+            x[n-1][i] = (b[index[n-1]][i] / a[index[n-1]][n-1]);
             for (int j=n-2; j>=0; --j)
             {
                 x[j][i] = b[index[j]][i];
@@ -227,7 +164,7 @@ public static double[][] Multi(double[][] A, double[][] B) {
             index[k] = itmp;
             for (int i=j+1; i<n; ++i)
             {
-                double pj = a[index[i]][j]/a[index[j]][j];
+                double pj = (a[index[i]][j] / a[index[j]][j]);
 
                 // Record pivoting ratios below the diagonal
                 a[index[i]][j] = pj;
@@ -241,13 +178,9 @@ public static double[][] Multi(double[][] A, double[][] B) {
 
     /*------------------------------------------Trace-----------------------------------------*/
 public static double Trace(double [][] A)  {
-    int N = A.length;
     double Sum = 0;
-    double [][] An = new double [N][N];
-    for(int i = 0; i < N; i++)
-        for(int j = 0; j < N; j++)
-            Sum += An[i][i];
-
+    for(int i = 0; i < A.length; i++)
+            Sum += A[i][i];
     return Sum;
 }
 

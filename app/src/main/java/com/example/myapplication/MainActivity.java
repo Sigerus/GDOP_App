@@ -72,7 +72,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         //////////////////////////
 
 
-
+        /*
         drawingImageView = (ImageView) this.findViewById(R.id.imageView);
         Bitmap bitmap = Bitmap.createBitmap((int) getWindowManager()
                 .getDefaultDisplay().getWidth(), (int) getWindowManager()
@@ -96,7 +96,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             canvas.drawLine(0, i, pointImageWidth, i, paint);
         for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
             canvas.drawLine(i, 0, i, pointImageHeight, paint);
-
+    */
 
 
 

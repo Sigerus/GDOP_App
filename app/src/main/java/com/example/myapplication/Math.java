@@ -19,7 +19,7 @@ private MainActivity Main;
         int k = 0; // счёт
         int[][] SatPos = new int[2][PointList.size()];
         double[][] H = new double [PointList.size()][2];
-        double[][] Gdop = new double[1315][1315];
+        double[][] Gdop = new double[1315][1850];
 
 
 
@@ -52,7 +52,7 @@ private MainActivity Main;
     }
 
 
-/*------------------------------------------Траспонирование матрицы-----------------------------------------*/
+/*------------------------------------------Траспонирование матрицы(kalich)-----------------------------------------*/
 public static double [][] FunT(double[][] A) {
     double[][] An = new double[A[0].length][A.length];
     for (int i = 0; i < A.length; ++i)
@@ -61,10 +61,10 @@ public static double [][] FunT(double[][] A) {
     return An;
 }
 
-/*------------------------------------------Перемножение матриц-----------------------------------------*/
+/*------------------------------------------Перемножение матриц(kalich)-----------------------------------------*/
 public static double[][] Multi(double[][] A, double[][] B) {
     int N = A.length;
-    int M = A[0].length;
+    //int M = A[0].length;
     int N1 = B.length;
     int M1 = B[0].length;
     //if (M != N1) {
@@ -176,7 +176,7 @@ public static double[][] Multi(double[][] A, double[][] B) {
         }
     }
 
-    /*------------------------------------------Trace-----------------------------------------*/
+    /*------------------------------------------Trace(kalich)-----------------------------------------*/
 public static double Trace(double [][] A)  {
     double Sum = 0;
     for(int i = 0; i < A.length; i++)

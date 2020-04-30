@@ -213,7 +213,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     }
 
 
-
     public static class PointImageView extends androidx.appcompat.widget.AppCompatImageView {
         //public final int MaxSatCount = Integer.parseInt(Beacons.getText().toString());
         //public int MaxSatCount = 0;
@@ -238,8 +237,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
 
         public void DrawGdop(double[][] Gdop) {
-            //super.draw();
             Canvas S = new Canvas();
+            super.draw(S);
             for (int i = 0; i < Gdop.length; i++)
                 for (int j = 0; j < Gdop[0].length; j++)
                 {
@@ -259,7 +258,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     paint.setStrokeWidth(10f);
 
 
-                    S.drawPoint(i+5, j+5, paint);
+                    S.drawPoint(i, j, paint);
                     invalidate();
 
                 }
@@ -290,97 +289,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             for (Point p : PointList) {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
+
+
+
             }
         }
     }
-
-    /*public void DrawGdop(double Gdop, ) {
-            //super.draw();
-            Canvas S = new Canvas();
-                    Paint paint = new Paint();
-                    if (Gdop < 0.5)
-                    {
-                        paint.setColor(Color.GREEN);
-                    }
-                    else if (Gdop > 0.5 || Gdop < 0.7)
-                    {
-                        paint.setColor(Color.YELLOW);
-                    }
-                    else
-                    {
-                        paint.setColor(Color.RED);
-                    }
-                    paint.setStrokeWidth(10f);
-
-
-                    S.drawPoint(i+5, j+5, paint);
-                    invalidate();
-
-                }
-        }
-    /*public static class Zalupa extends androidx.appcompat.widget.AppCompatImageView {
-
-
-
-
-        public Zalupa(Context context) {
-            super(context);
-
-        }
-
-        public Zalupa(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        public Zalupa(Context context, AttributeSet attrs, int defStyle) {
-            super(context, attrs, defStyle);
-        }
-
-        public void invalidateImage() {
-            invalidate();
-        }
-
-
-        public void DrawGdop(double[][] Gdop) {
-            //super.draw(canvas);
-            for (int i = 0; i < Gdop.length; i++)
-                for (int j = 0; j < Gdop[0].length; i++)
-                {
-                    Paint paint = new Paint();
-                    if (Gdop[i][j] < 0.5)
-                    {
-                        paint.setColor(Color.GREEN);
-                    }
-                    else if (Gdop[i][j] > 0.5 || Gdop[i][j] < 0.7)
-                    {
-                        paint.setColor(Color.YELLOW);
-                    }
-                    else
-                    {
-                        paint.setColor(Color.RED);
-                    }
-                    paint.setStrokeWidth(10f);
-
-
-
-                    public void draw(Canvas canvas) {
-                    super.draw(canvas);
-                    Paint paint = new Paint();
-                    paint.setColor(Color.BLACK);
-                    paint.setStrokeWidth(30f);
-                    if (point != null) {
-
-                    }
-                    for (Point p : PointList) {
-                        canvas.drawPoint(p.x, p.y, paint);
-                        invalidate();
-                    }
-
-
-    }*/
-
-
-
 
 
 

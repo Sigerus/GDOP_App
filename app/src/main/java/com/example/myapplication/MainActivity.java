@@ -27,6 +27,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.lang.Math.abs;
 
@@ -48,6 +49,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     String MoveTouch = "";
     public int Key = 0;
     private ImageView drawingImageView;
+    ////////
+   // Math math = new Math();
 
 
     @Override
@@ -65,7 +68,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go = findViewById(R.id.button3);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
-
         pointImageView = (PointImageView) findViewById(R.id.imageView);
 
         pointImageView.setOnTouchListener(this);
@@ -129,11 +131,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tv.setText("Какая-нибудь хуйня");
+                tv.setText("Completed");
                 Math math = new Math();
-                double [][] Gdop;
-                Gdop = math.main(pointImageView.PointList);
-                pointImageView.DrawGdop(Gdop);
+                double[][] Gdop = math.main(pointImageView.PointList);
+                //pointImageView.DrawGdop(Gdop);
 
                 //pointImageView.DrawGdop(Gdop);
                 //PointImageView.DrawGdop(Gdop);
@@ -145,6 +146,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
 
     }
+
+
+
+
+
+
+
+
 
 
     /*public void AddBeacon(View view) {
@@ -168,7 +177,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     pointImageView.invalidateImage();
                 }
                 else {
-                  Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
+                  Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
                 }
                 //  pointImageView.setPoint(new Point(x, y));
                 //tv.setText(null);
@@ -218,6 +227,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         //public int MaxSatCount = 0;
         public ArrayList<Point> PointList = new ArrayList<Point>();
         private Point point;
+        //private com.example.myapplication.Math math;
+        ///////
+        //Math math = new Math();
+        //public double[][] Gdop = math.main(PointList);
+
+        ///////
+
 
         public PointImageView(Context context) {
             super(context);
@@ -236,6 +252,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             invalidate();
         }
 
+/*
         public void DrawGdop(double[][] Gdop) {
             Canvas S = new Canvas();
             super.draw(S);
@@ -263,6 +280,30 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                 }
         }
+*/
+
+
+/*
+        public void paint(Graphics g) {
+            Graphics2D gr2d = (Graphics2D) g;
+            gr2d.setBackground(Color.green);
+            int[][] tabel = new int[500][500];
+            for (int i = 0; i < tabel.length; i++) {
+                for (int j = 0; j < tabel.length; j++) {
+                    tabel[i][j] = (int) Math.round(Math.random());
+                }
+            }
+            for (int i = 0; i < tabel.length; i++) {
+                for (int j = 0; j < tabel.length; j++) {
+                    if (tabel[i][j] == 0) {
+                        gr2d.setPaint(Color.BLACK);
+                        gr2d.drawOval(i, j, 1, 1);
+                    }
+                }
+            }
+        }
+*/
+
 
 
 
@@ -272,6 +313,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         @Override
         public void draw(Canvas canvas) {
             super.draw(canvas);
+            //Bitmap b = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+            //Canvas c = new Canvas(b);
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(30f);
@@ -290,14 +333,68 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
 
+            }
+        }
 
+
+        public class DrawGdop extends androidx.appcompat.widget.AppCompatImageView {
+
+            public DrawGdop(Context context) {
+                super(context);
+                // TODO Auto-generated constructor stub
+            }
+
+            @Override
+            protected void onDraw(Canvas canvas) {
+                // TODO Auto-generated method stub
+                super.onDraw(canvas);
+                @SuppressLint("DrawAllocation") Paint paint = new Paint();
+
+                @SuppressLint("DrawAllocation") Math a = new Math();
+
+
+                double[][] Gdop = a.main(PointList);
+
+                for (int i = 0; i < Gdop.length; i++)
+                    for (int j = 0; j < Gdop[0].length; j++)
+                    {
+                        if (Gdop[i][j] < 0.5)
+                        {
+                            paint.setColor(Color.GREEN);
+                        }
+                        else if (Gdop[i][j] > 0.5 || Gdop[i][j] < 0.7)
+                        {
+                            paint.setColor(Color.YELLOW);
+                        }
+                        else
+                        {
+                            paint.setColor(Color.RED);
+                        }
+                        paint.setStrokeWidth(10f);
+
+
+                        canvas.drawPoint(i, j, paint);
+                        invalidate();
+
+                    }
 
             }
         }
+
+    }
+/*
+    public void paint(Graphics g) {
+
     }
 
-
+    private class Graphics {
+    }
+    */
 
 }
+
+
+
+
 
 

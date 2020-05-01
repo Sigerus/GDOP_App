@@ -27,6 +27,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static java.lang.Math.abs;
 
@@ -129,7 +130,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tv.setText("Какая-нибудь хуйня");
+               // tv.setText("Какая-нибудь хуйня");
                 Math math = new Math();
                 double [][] Gdop;
                 Gdop = math.main(pointImageView.PointList);
@@ -257,17 +258,30 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     }
                     paint.setStrokeWidth(10f);
 
-
                     S.drawPoint(i, j, paint);
                     invalidate();
 
                 }
         }
 
+        public  void DrawBitMap()
+        {
+            Canvas canvas = new Canvas();
+            super.draw(canvas);
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            Bitmap bitmap;
+            Bitmap bitmapAlpha;
+            int[] colors = new int[300*300];
+            Arrays.fill(colors, 0, 300*100, Color.argb(85, 255, 0, 0));
+            Arrays.fill(colors, 300*100, 300*200, Color.GREEN);
+            Arrays.fill(colors, 300*200, 300*300, Color.BLUE);
 
-
-
-
+            bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
+            bitmapAlpha = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.ARGB_8888);
+            canvas.drawBitmap(bitmap, 50, 50, paint);
+            canvas.drawBitmap(bitmapAlpha, 550, 50, paint);
+            invalidate();
+        }
 
         @Override
         public void draw(Canvas canvas) {

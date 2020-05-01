@@ -451,11 +451,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 for (int j = 0; j < Gdop[0].length; j++)
                 {
                     Paint paint = new Paint();
-                    if (Gdop[i][j] < 0.5)
+                    if (Gdop[i][j] < 0.5) // 0.5
                     {
                         paint.setColor(Color.BLUE);
                     }
-                    else if (Gdop[i][j] >= 0.5 || Gdop[i][j] < 0.8)
+                    else if (Gdop[i][j] >=0.5  || Gdop[i][j] < 0.8) //0.5 0.8
                     {
                         paint.setColor(Color.YELLOW);
                     }

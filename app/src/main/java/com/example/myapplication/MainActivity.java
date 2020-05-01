@@ -4,18 +4,24 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
@@ -37,15 +43,17 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private Math Math;
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
+    private int ScreenStep = 100;
     String Touch = "";
     String MoveTouch = "";
     public int Key = 0;
-
+    private ImageView drawingImageView;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         tv = new TextView(this);
         tv2 = new TextView(this);
@@ -61,7 +69,38 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         pointImageView = (PointImageView) findViewById(R.id.imageView);
 
         pointImageView.setOnTouchListener(this);
+        //////////////////////////
 
+
+        /*
+        drawingImageView = (ImageView) this.findViewById(R.id.imageView);
+        Bitmap bitmap = Bitmap.createBitmap((int) getWindowManager()
+                .getDefaultDisplay().getWidth(), (int) getWindowManager()
+                .getDefaultDisplay().getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawingImageView.setImageBitmap(bitmap);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.DKGRAY);
+        paint.setStrokeWidth(3);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        pointImageWidth = size.x;
+        pointImageHeight = size.y;
+
+
+
+        for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
+            canvas.drawLine(0, i, pointImageWidth, i, paint);
+        for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
+            canvas.drawLine(i, 0, i, pointImageHeight, paint);
+    */
+
+
+
+        ////////////////////////////////
 
         Ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,16 +131,18 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             public void onClick(View v) {
                 tv.setText("Какая-нибудь хуйня");
                 Math math = new Math();
-                double[][] Gdop = new double[100][100];
+                double [][] Gdop;
                 Gdop = math.main(pointImageView.PointList);
                 pointImageView.DrawGdop(math.main(pointImageView.PointList));
 
+                //pointImageView.DrawGdop(Gdop);
                 //PointImageView.DrawGdop(Gdop);
                 //pointImageView.invalidateImage();
                 //math.main(pointImageView.PointList);
 
             }
         });
+
 
     }
 
@@ -122,12 +163,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 if (pointImageView.PointList.size() !=  Key) {
-                    Touch = "X: " + (getX) + "\n" + "Y: " +  (abs(getY - 1850))+ "\n";
+                    Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                     pointImageView.PointList.add(new Point(getX, getY));
                     pointImageView.invalidateImage();
                 }
                 else {
-                  Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
+                  Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
                 }
                 //  pointImageView.setPoint(new Point(x, y));
                 //tv.setText(null);
@@ -172,7 +213,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     }
 
 
-
     public static class PointImageView extends androidx.appcompat.widget.AppCompatImageView {
         //public final int MaxSatCount = Integer.parseInt(Beacons.getText().toString());
         //public int MaxSatCount = 0;
@@ -197,9 +237,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
 
         public void DrawGdop(double[][] Gdop) {
-            //super.draw(canvas);
+            Canvas S = new Canvas();
+            super.draw(S);
             for (int i = 0; i < Gdop.length; i++)
-                for (int j = 0; j < Gdop[0].length; i++)
+                for (int j = 0; j < Gdop[0].length; j++)
                 {
                     Paint paint = new Paint();
                     if (Gdop[i][j] < 0.5)
@@ -215,14 +256,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         paint.setColor(Color.RED);
                     }
                     paint.setStrokeWidth(10f);
-                    //canvas.drawPoint(50, 1500, paint);
-                    //invalidate();
-                    Canvas S = new Canvas();
-                    S.drawPoint(50, 1500, paint);
+
+
+                    S.drawPoint(i, j, paint);
                     invalidate();
 
                 }
         }
+
 
 
 
@@ -248,9 +289,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             for (Point p : PointList) {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
+
+
+
             }
         }
     }
+
+
+
 }
 
 

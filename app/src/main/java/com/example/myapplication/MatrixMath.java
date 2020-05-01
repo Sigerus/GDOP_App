@@ -4,22 +4,22 @@ import android.graphics.Point;
 
 import java.util.ArrayList;
 
-public class Math {
+public class MatrixMath {
 
 private MainActivity Main;
     private MainActivity.PointImageView pointImageView;
 
-    public double [][] main(ArrayList<Point> PointList) {
+    public double [][] main(ArrayList<Point> PointList,int KX,int KY) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
-        int KX = 1315; // конечная координата OX
-        int KY = 1315; // конечная координата OY
+       // int KX = 1315; // конечная координата OX
+      //  int KY = 1315; // конечная координата OY
         int h = 1; // шаг
         //int n = Main.Key; // количество маяков
         int k = 0; // счёт
         int[][] SatPos = new int[2][PointList.size()];
         double[][] H = new double [PointList.size()][2];
-        double[][] Gdop = new double[1315][1850];
+        double[][] Gdop = new double[KX][KY];
 
 
 
@@ -41,7 +41,7 @@ private MainActivity Main;
                     k += 1;
                 }
                 k = 0;
-                Gdop[y][x] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
+                Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
                 //return Gdop[y][x];
 
             }

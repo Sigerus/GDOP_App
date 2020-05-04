@@ -9,7 +9,7 @@
 
     <view
         android:id="@+id/imageView"
-        class="com.example.myapplication.MainActivity$PointImageView"
+        class="com.example.myapplication.MainActivity$RoomImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="16dp"
@@ -26,7 +26,7 @@
         tools:ignore="MissingConstraints" />
     <view
         android:id="@+id/imageView2"
-        class="com.example.myapplication.MainActivity$PointImageView"
+        class="com.example.myapplication.MainActivity$GDOPImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="16dp"

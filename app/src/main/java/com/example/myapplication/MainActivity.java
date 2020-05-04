@@ -6,11 +6,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -38,7 +38,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     Button Go;
     private int getX;
     private int getY;
-    private PointImageView pointImageView;
+    private RoomImageView roomImageView;
+    private GDOPImageView gdopImageView;
     private MatrixMath MatrixMath;
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
@@ -64,11 +65,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go = findViewById(R.id.button3);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
-       ImageView imageView = findViewById(R.id.imageView);
+        ImageView imageView = findViewById(R.id.imageView);
 // плохой код. только для демонстрации
-       // imageView.setImageDrawable(new DrawView(this));
-        pointImageView = (PointImageView) findViewById(R.id.imageView);
-        pointImageView.setOnTouchListener(this);
+        // imageView.setImageDrawable(new DrawView(this));
+        roomImageView = (RoomImageView) findViewById(R.id.imageView);
+        gdopImageView = (GDOPImageView) findViewById(R.id.imageView2);
+        roomImageView.setOnTouchListener(this);
         //////////////////////////
 
         /*
@@ -102,16 +104,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Beacons.getText().toString().equals("") || Beacons.getText().toString().equals("0"))
-                {
+                if (Beacons.getText().toString().equals("") || Beacons.getText().toString().equals("0")) {
                     tv.setText("Введите количество маяков");
-                }
-                else
-                {
+                } else {
                     Key += Integer.parseInt(Beacons.getText().toString());
                     Beacons.setKeyListener(null);
                     v.setClickable(false);
-                   // Beacons.setText("");
+                    // Beacons.setText("");
                 }
             }
         });
@@ -126,24 +125,21 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // tv.setText("Какая-нибудь хуйня");
+                // tv.setText("Какая-нибудь хуйня");
+                Toast.makeText(getApplicationContext(), String.valueOf(roomImageView.getWidth()) + " " + String.valueOf(roomImageView.getHeight()), Toast.LENGTH_LONG).show();
 
-
-                Toast.makeText(getApplicationContext(),String.valueOf(pointImageView.getWidth()) + " " +String.valueOf(pointImageView.getHeight()),Toast.LENGTH_LONG).show();
-
-                pointImageView.redrawGDOP= true;
-                double [][] Gdop;
+                roomImageView.redrawGDOP = true;
+                double[][] Gdop;
                 MatrixMath matrixMath = new MatrixMath();
-                Gdop = matrixMath.main(pointImageView.PointList,pointImageView.getWidth(),pointImageView.getHeight());
-                pointImageView.setGdop(Gdop);
-                pointImageView.invalidateImage();
-               // pointImageView.DrawGdop(math.main(pointImageView.PointList));
-               // pointImageView.DrawBitMap();
+                Gdop = matrixMath.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                gdopImageView.setGDOP(Gdop);
+                gdopImageView.invalidateImage();
+                // pointImageView.DrawGdop(math.main(pointImageView.PointList));
+                // pointImageView.DrawBitMap();
                 //pointImageView.DrawGdop(Gdop);
                 //PointImageView.DrawGdop(Gdop);
                 //pointImageView.invalidateImage();
                 //math.main(pointImageView.PointList);
-
             }
         });
     }
@@ -287,13 +283,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         boolean Captured = false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                if (pointImageView.PointList.size() !=  Key) {
+                if (roomImageView.PointList.size() != Key) {
                     Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
-                    pointImageView.PointList.add(new Point(getX, getY));
-                    pointImageView.invalidateImage();
-                }
-                else {
-                  Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
+                    roomImageView.PointList.add(new Point(getX, getY));
+                    roomImageView.invalidateImage();
+                } else {
+                    Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                 }
                 //  pointImageView.setPoint(new Point(x, y));
                 //tv.setText(null);
@@ -304,49 +299,42 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
             //остался баг с пожиранием маяков
             case MotionEvent.ACTION_MOVE: {
-                for (int i = 0; i < pointImageView.PointList.size(); i++) {
-                    int offsetX = abs(getX - pointImageView.PointList.get(i).x);
-                    int offsetY = abs(getY - pointImageView.PointList.get(i).y);
+                for (int i = 0; i < roomImageView.PointList.size(); i++) {
+                    int offsetX = abs(getX - roomImageView.PointList.get(i).x);
+                    int offsetY = abs(getY - roomImageView.PointList.get(i).y);
                     if (offsetX < 50 && offsetY < 50) {
                         Captured = true;
                         CapturedPointIndex = i;
-                        if (getX < 0 ) {
-                            pointImageView.PointList.get(i).x = 0;
-                        }
-                        else if(getX > pointImageView.getWidth())
-                        {
-                            pointImageView.PointList.get(i).x = pointImageView.getWidth();
-                            pointImageView.PointList.get(i).y = getY;
-                        }
-                        else if (getY < 0 ) {
-                            pointImageView.PointList.get(i).y = 0;
-                        }
-                        else if (getY > pointImageView.getHeight())
-                        {
-                            pointImageView.PointList.get(i).y = pointImageView.getHeight();
-                            pointImageView.PointList.get(i).x = getX;
-                        }
-                        else
-                         {
-                            pointImageView.PointList.get(i).x = getX;
-                            pointImageView.PointList.get(i).y = getY;
+                        if (getX < 0) {
+                            roomImageView.PointList.get(i).x = 0;
+                        } else if (getX > roomImageView.getWidth()) {
+                            roomImageView.PointList.get(i).x = roomImageView.getWidth();
+                            roomImageView.PointList.get(i).y = getY;
+                        } else if (getY < 0) {
+                            roomImageView.PointList.get(i).y = 0;
+                        } else if (getY > roomImageView.getHeight()) {
+                            roomImageView.PointList.get(i).y = roomImageView.getHeight();
+                            roomImageView.PointList.get(i).x = getX;
+                        } else {
+                            roomImageView.PointList.get(i).x = getX;
+                            roomImageView.PointList.get(i).y = getY;
                         }
                     }
-                    pointImageView.invalidateImage();
+                    roomImageView.invalidateImage();
                 }
-                MoveTouch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850))+ "\n";
+                MoveTouch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                 tv.setText(MoveTouch);
                 //Toast.makeText(this,"ACTION MOVE",Toast.LENGTH_SHORT).show();
                 break;
             }
             case MotionEvent.ACTION_UP: {
                 if (Captured) {
-                    pointImageView.PointList.get(CapturedPointIndex).x = getX;
-                    pointImageView.PointList.get(CapturedPointIndex).y = getY;
-                    pointImageView.invalidateImage();
+                    roomImageView.PointList.get(CapturedPointIndex).x = getX;
+                    roomImageView.PointList.get(CapturedPointIndex).y = getY;
+                    roomImageView.invalidateImage();
                 }
-                 // pointImageView.PointList.get(CapturedPointIndex).x = getX;
-                 // pointImageView.PointList.get(CapturedPointIndex).y = getY;
+                // pointImageView.PointList.get(CapturedPointIndex).x = getX;
+                // pointImageView.PointList.get(CapturedPointIndex).y = getY;
                 break;
             }
         }
@@ -422,28 +410,29 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     }
 
-    public static class PointImageView extends androidx.appcompat.widget.AppCompatImageView {
+    public static class RoomImageView extends androidx.appcompat.widget.AppCompatImageView {
         //public final int MaxSatCount = Integer.parseInt(Beacons.getText().toString());
         //public int MaxSatCount = 0;
         public ArrayList<Point> PointList = new ArrayList<Point>();
         private Point point;
         Bitmap bitmap;
         Bitmap bitmapAlpha;
-        double [][] Gdop;
+        double[][] Gdop;
         boolean redrawGDOP;
+
         public void setGdop(double[][] gdop) {
             Gdop = gdop;
         }
 
-        public PointImageView(Context context) {
+        public RoomImageView(Context context) {
             super(context);
         }
 
-        public PointImageView(Context context, AttributeSet attrs) {
+        public RoomImageView(Context context, AttributeSet attrs) {
             super(context, attrs);
         }
 
-        public PointImageView(Context context, AttributeSet attrs, int defStyle) {
+        public RoomImageView(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
         }
 
@@ -469,90 +458,73 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             paint.setStrokeWidth(1f);
 
             for (int i = 0; i < Gdop.length; i++)
-                for (int j = 0; j < Gdop[0].length; j++)
-                {
-                   // Paint paint = new Paint();
-                    if (Gdop[i][j] <= 1)
-                    {
+                for (int j = 0; j < Gdop[0].length; j++) {
+                    // Paint paint = new Paint();
+                    if (Gdop[i][j] <= 1) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP1));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
 
-                       // invalidate();
+                        // invalidate();
 
-                    }
-                    else if (Gdop[i][j] > 1 || Gdop[i][j] < 1.2)
-                    {
+                    } else if (Gdop[i][j] > 1 || Gdop[i][j] < 1.2) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintYELLOW);
                         //  invalidate();
-                    }
-                    else if (Gdop[i][j] >= 1.2 || Gdop[i][j] < 2)
-                    {
+                    } else if (Gdop[i][j] >= 1.2 || Gdop[i][j] < 2) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP2));
                         //canvas.drawCircle(i, j,1, paint);
-                         canvas.drawPoint(i, j, paint);
+                        canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintYELLOW);
-                      //  invalidate();
-                    }
-                    else if(Gdop[i][j] >= 2 || Gdop[i][j] < 2.5)
-                    {
+                        //  invalidate();
+                    } else if (Gdop[i][j] >= 2 || Gdop[i][j] < 2.5) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
                         //canvas.drawPoint(i, j, paint);
                         canvas.drawPoint(i, j, paint);
                         // invalidate();
-                    }
-                    else if(Gdop[i][j] >= 2.5 || Gdop[i][j] < 3)
-                    {
+                    } else if (Gdop[i][j] >= 2.5 || Gdop[i][j] < 3) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP3));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
                         // invalidate();
-                    }
-                    else if(Gdop[i][j] >= 3 || Gdop[i][j] < 3.5)
-                    {
+                    } else if (Gdop[i][j] >= 3 || Gdop[i][j] < 3.5) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP35));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
                         // invalidate();
-                    }
-                    else if(Gdop[i][j] >= 3.5|| Gdop[i][j] < 4)
-                    {
+                    } else if (Gdop[i][j] >= 3.5 || Gdop[i][j] < 4) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP4));
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
                         // invalidate();
-                    }
-                    else if(Gdop[i][j] >= 4|| Gdop[i][j] < 4.5)
-                    {
+                    } else if (Gdop[i][j] >= 4 || Gdop[i][j] < 4.5) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP45));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
                         // invalidate();
                     }
-                 //  paint.setStrokeWidth(1f);
+                    //  paint.setStrokeWidth(1f);
                     invalidate();
                 }
-           // redrawGDOP =false;
-           // invalidate();
+            // redrawGDOP =false;
+            // invalidate();
         }
 
-        public void DrawBitMap(Canvas canvas)
-        {
+        public void DrawBitMap(Canvas canvas) {
             super.draw(canvas);
-           // Canvas canvas = new Canvas();
+            // Canvas canvas = new Canvas();
 
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-            int[] colors = new int[300*300];
-            Arrays.fill(colors, 0, 300*100, Color.argb(85, 255, 0, 0));
-            Arrays.fill(colors, 300*100, 300*200, Color.GREEN);
-            Arrays.fill(colors, 300*200, 300*300, Color.BLUE);
+            int[] colors = new int[300 * 300];
+            Arrays.fill(colors, 0, 300 * 100, Color.argb(85, 255, 0, 0));
+            Arrays.fill(colors, 300 * 100, 300 * 200, Color.GREEN);
+            Arrays.fill(colors, 300 * 200, 300 * 300, Color.BLUE);
 
             bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
             bitmapAlpha = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.ARGB_8888);
@@ -572,11 +544,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(30f);
-            if(Gdop !=null)
-            {
-              DrawGdop(canvas);
+            if (Gdop != null) {
+           //     DrawGdop(canvas);
             }
-          //  DrawBitMap(canvas);
+            //  DrawBitMap(canvas);
             if (point != null) {
               /*Paint paint = new Paint();
                 paint.setColor(Color.BLACK);
@@ -592,12 +563,167 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
             }
-
         }
     }
 
+        public static class GDOPImageView extends androidx.appcompat.widget.AppCompatImageView {
+            //public final int MaxSatCount = Integer.parseInt(Beacons.getText().toString());
+            //public int MaxSatCount = 0;
+            public ArrayList<Point> PointList = new ArrayList<Point>();
+            private Point point;
+            Bitmap bitmap;
+            Bitmap bitmapAlpha;
+            double[][] GDOP;
+            boolean redrawGDOP;
 
+            public void setGDOP(double[][] GDOP) {
+                this.GDOP = GDOP;
+            }
+
+            public GDOPImageView(Context context) {
+                super(context);
+            }
+
+            public GDOPImageView(Context context, AttributeSet attrs) {
+                super(context, attrs);
+            }
+
+            public GDOPImageView(Context context, AttributeSet attrs, int defStyle) {
+                super(context, attrs, defStyle);
+            }
+
+
+            public void invalidateImage() {
+                invalidate();
+            }
+
+            public void DrawGDOP(Canvas canvas) {
+                super.draw(canvas);
+                Paint paint = new Paint();
+           /* Paint paintBLUE = new Paint();
+            paintBLUE.setColor(Color.rgb(0,0,255));
+            paintBLUE.setStrokeWidth(1f);
+
+            Paint paintYELLOW = new Paint();
+            paintYELLOW.setColor(Color.YELLOW);
+            paintYELLOW.setStrokeWidth(1f);
+
+            Paint paintRED = new Paint();
+            paintRED.setColor(Color.RED);
+            paintRED.setStrokeWidth(1f);*/
+                paint.setStrokeWidth(1f);
+
+                for (int i = 0; i < GDOP.length; i++)
+                    for (int j = 0; j < GDOP[0].length; j++) {
+                        // Paint paint = new Paint();
+                        if (GDOP[i][j] <= 1) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP1));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+
+                            // invalidate();
+
+                        } else if (GDOP[i][j] > 1 || GDOP[i][j] < 1.2) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintYELLOW);
+                            //  invalidate();
+                        } else if (GDOP[i][j] >= 1.2 || GDOP[i][j] < 2) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP2));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintYELLOW);
+                            //  invalidate();
+                        } else if (GDOP[i][j] >= 2 || GDOP[i][j] < 2.5) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
+                            //canvas.drawPoint(i, j, paint);
+                            canvas.drawPoint(i, j, paint);
+                            // invalidate();
+                        } else if (GDOP[i][j] >= 2.5 || GDOP[i][j] < 3) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP3));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintRED);
+                            // invalidate();
+                        } else if (GDOP[i][j] >= 3 || GDOP[i][j] < 3.5) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP35));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintRED);
+                            // invalidate();
+                        } else if (GDOP[i][j] >= 3.5 || GDOP[i][j] < 4) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP4));
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintRED);
+                            // invalidate();
+                        } else if (GDOP[i][j] >= 4 || GDOP[i][j] < 4.5) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP45));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintRED);
+                            // invalidate();
+                        }
+                        //  paint.setStrokeWidth(1f);
+                        invalidateImage();
+                    }
+                // redrawGDOP =false;
+                // invalidate();
+            }
+
+            public void DrawBitMap(Canvas canvas) {
+                super.draw(canvas);
+                // Canvas canvas = new Canvas();
+
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+                int[] colors = new int[300 * 300];
+                Arrays.fill(colors, 0, 300 * 100, Color.argb(85, 255, 0, 0));
+                Arrays.fill(colors, 300 * 100, 300 * 200, Color.GREEN);
+                Arrays.fill(colors, 300 * 200, 300 * 300, Color.BLUE);
+
+                bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
+                bitmapAlpha = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.ARGB_8888);
+                canvas.drawBitmap(bitmap, 50, 50, paint);
+                canvas.drawBitmap(bitmapAlpha, 550, 50, paint);
+                invalidate();
+            }
+
+            @Override
+            protected void onDraw(Canvas canvas) {
+                super.onDraw(canvas);
+            }
+
+            @Override
+            public void draw(Canvas canvas) {
+                super.draw(canvas);
+             //   Paint paint = new Paint();
+             //   paint.setColor(Color.BLACK);
+             //   paint.setStrokeWidth(30f);
+                if (GDOP != null) {
+                    DrawGDOP(canvas);
+                }
+                /* //  DrawBitMap(canvas);
+              Paint paint = new Paint();
+                paint.setColor(Color.BLACK);
+                paint.setStrokeWidth(30f); //Вот оно
+                canvas.drawPoint(point.x, point.y, paint);
+                for (Point p : PointList)
+                {
+                    canvas.drawPoint(p.x, p.y, paint);
+                    invalidate();
+                }
+                }
+                for (Point p : PointList) {
+                    canvas.drawPoint(p.x, p.y, paint);
+                    invalidate();
+                }*/
+            }
+        }
 
 }
+
+
+
 
 

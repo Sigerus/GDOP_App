@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class MatrixMath {
 
 private MainActivity Main;
-    private MainActivity.PointImageView pointImageView;
+    private MainActivity.RoomImageView roomImageView;
 
     public double [][] main(ArrayList<Point> PointList,int KX,int KY) {
         int OX = 0; // начальная координата OX

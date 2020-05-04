@@ -1,8 +1,12 @@
 package com.example.myapplication;
 
+import java.lang.Object;
+
 import android.graphics.Point;
 
 import java.util.ArrayList;
+
+import Jama.Matrix;
 
 public class MatrixMath {
 
@@ -19,7 +23,10 @@ private MainActivity Main;
         int k = 0; // счёт
         int[][] SatPos = new int[2][PointList.size()];
         double[][] H = new double [PointList.size()][2];
+        double[][] D = new double [PointList.size()][2]; /// копия  H
         double[][] Gdop = new double[KX][KY];
+        double[][] Mult = new double[PointList.size()][PointList.size()];
+
 
 
 
@@ -28,6 +35,8 @@ private MainActivity Main;
             SatPos[0][i] = PointList.get(i).x;
             SatPos[1][i] = PointList.get(i).y;
         }
+
+
         /*if (n < 0) {
             System.exit(1); // or break;
         }*/
@@ -39,11 +48,11 @@ private MainActivity Main;
                     k += 1;
                 }
                 k = 0;
-                double[][] Htr = FunT(H);
-                double[][] Hmult = Multi(H, Htr);
-                double     Htrace = Trace(invert(Multi(H, FunT(H))));
-                Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
-                //return Gdop[y][x];
+                D = H;
+                Matrix A = new Matrix(H);
+                Gdop[x][y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+
+                //Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
 
             }
 
@@ -51,6 +60,7 @@ private MainActivity Main;
         return Gdop;
 
     }
+
 
 /*------------------------------------------Траспонирование матрицы(kalich)-----------------------------------------*/
 public static double [][] FunT(double[][] A) {

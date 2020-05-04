@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class MatrixMath {
 
 private MainActivity Main;
-    private MainActivity.PointImageView pointImageView;
+    private MainActivity.RoomImageView roomImageView;
 
     public double [][] main(ArrayList<Point> PointList,int KX,int KY) {
         int OX = 0; // начальная координата OX
@@ -28,8 +28,6 @@ private MainActivity Main;
             SatPos[0][i] = PointList.get(i).x;
             SatPos[1][i] = PointList.get(i).y;
         }
-
-
         /*if (n < 0) {
             System.exit(1); // or break;
         }*/
@@ -41,6 +39,9 @@ private MainActivity Main;
                     k += 1;
                 }
                 k = 0;
+                double[][] Htr = FunT(H);
+                double[][] Hmult = Multi(H, Htr);
+                double     Htrace = Trace(invert(Multi(H, FunT(H))));
                 Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
                 //return Gdop[y][x];
 
@@ -50,7 +51,6 @@ private MainActivity Main;
         return Gdop;
 
     }
-
 
 /*------------------------------------------Траспонирование матрицы(kalich)-----------------------------------------*/
 public static double [][] FunT(double[][] A) {

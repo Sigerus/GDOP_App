@@ -621,48 +621,54 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);
 
-                            // invalidate();
+                             invalidate();
 
-                        } else if (GDOP[i][j] > 1 && GDOP[i][j] < 1.2) {
+                        } else if (GDOP[i][j] > 1 || GDOP[i][j] < 1.2) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);
                             //canvas.drawPoint(i, j, paintYELLOW);
                             //  invalidate();
-                        } else if (GDOP[i][j] >= 1.2 && GDOP[i][j] < 2) {
+                        } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP2));
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);
                             //canvas.drawPoint(i, j, paintYELLOW);
-                            //  invalidate();
-                        } else if (GDOP[i][j] >= 1.2 && GDOP[i][j] < 2.5) {
+                              invalidate();
+                        } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
                             //canvas.drawPoint(i, j, paint);
                             canvas.drawPoint(i, j, paint);
-                            // invalidate();
-                        } else if (GDOP[i][j] >= 2.5 && GDOP[i][j] < 3) {
+                             invalidate();
+                        } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP3));
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);
                             //canvas.drawPoint(i, j, paintRED);
-                            // invalidate();
-                        } else if (GDOP[i][j] >= 3 && GDOP[i][j] < 3.5) {
+                             invalidate();
+                        } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP35));
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);
                             //canvas.drawPoint(i, j, paintRED);
-                            // invalidate();
-                        } else if (GDOP[i][j] >= 3.5 && GDOP[i][j] < 4) {
+                             invalidate();
+                        } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP4));
                             canvas.drawPoint(i, j, paint);
                             //canvas.drawPoint(i, j, paintRED);
-                            // invalidate();
-                        } else if (GDOP[i][j] >= 4 && GDOP[i][j] < 4.5) {
+                             invalidate();
+                        } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP45));
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);
                             //canvas.drawPoint(i, j, paintRED);
-                            // invalidate();
+                             invalidate();
+                        }else if (GDOP[i][j] >= 4.5f) {
+                            paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP5));
+                            //canvas.drawCircle(i, j,1, paint);
+                            canvas.drawPoint(i, j, paint);
+                            //canvas.drawPoint(i, j, paintRED);
+                            invalidate();
                         }
                         //  paint.setStrokeWidth(1f);
                         invalidateImage();

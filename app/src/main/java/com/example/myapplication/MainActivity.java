@@ -16,8 +16,10 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
     TextView tv2;
     EditText Beacons;
+    Switch Switch;
     Button Ok;
     Button Plus;
     Button Go;
@@ -47,6 +50,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     String MoveTouch = "";
     public int Key = 0;
     private ImageView drawingImageView;
+    public boolean Flag = false;
 
 
     @Override
@@ -60,6 +64,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         tv2 = findViewById(R.id.textView);
         Beacons = findViewById(R.id.editText3);
         Ok = findViewById(R.id.button);
+        Switch = findViewById(R.id.switch2);
         Plus = findViewById(R.id.button2);
         Go = findViewById(R.id.button3);
         //tv.setOnTouchListener(this);
@@ -99,6 +104,17 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     */
 
         ////////////////////////////////
+        Switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Flag = true;
+                }else{
+                    Flag = false;
+                }
+
+            }
+        });
 
         Ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,8 +145,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                 roomImageView.redrawGDOP = true;
                 double[][] Gdop;
-                MatrixMath matrixMath = new MatrixMath();
-                Gdop = matrixMath.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                if(Flag){
+                    MatrixMath2 matrixMath = new MatrixMath2();
+                    Gdop = matrixMath.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                }else{
+                    MatrixMath matrixMath = new MatrixMath();
+                    Gdop = matrixMath.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                }
                 gdopImageView.setGDOP(Gdop);
                 gdopImageView.invalidateImage();
                 // pointImageView.DrawGdop(math.main(pointImageView.PointList));
@@ -623,7 +644,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                              invalidate();
 
-                        } else if (GDOP[i][j] > 1 || GDOP[i][j] < 1.2) {
+                        } else if (GDOP[i][j] > 1 && GDOP[i][j] < 1.2) {
                             paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
                             //canvas.drawCircle(i, j,1, paint);
                             canvas.drawPoint(i, j, paint);

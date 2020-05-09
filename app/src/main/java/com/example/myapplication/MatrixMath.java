@@ -3,6 +3,8 @@ package com.example.myapplication;
 import java.lang.Object;
 
 import android.graphics.Point;
+import android.os.AsyncTask;
+import android.os.Handler;
 
 import java.util.ArrayList;
 
@@ -10,36 +12,27 @@ import Jama.Matrix;
 
 public class MatrixMath {
 
-private MainActivity Main;
+    private MainActivity Main;
     private MainActivity.RoomImageView roomImageView;
 
-    public double [][] main(ArrayList<Point> PointList,int KX,int KY) {
-        int OX = 0; // начальная координата OX
-        int OY = 0; // начальная координата OY
-       // int KX = 1315; // конечная координата OX
-      //  int KY = 1315; // конечная координата OY
+    public double[][] main(ArrayList<Point> PointList,int OX,int OY, int KX, int KY) {
+        //int OX = 0; // начальная координата OX
+        //int OY = 0; // начальная координата OY
+        // int KX = 1315; // конечная координата OX
+        //  int KY = 1315; // конечная координата OY
         int h = 1; // шаг
         //int n = Main.Key; // количество маяков
         int k = 0; // счёт
         int[][] SatPos = new int[2][PointList.size()];
-        double[][] H = new double [PointList.size()][2];
-        double[][] D = new double [PointList.size()][2]; /// копия  H
+        double[][] H = new double[PointList.size()][2];
+        double[][] D = new double[PointList.size()][2]; /// копия  H
         double[][] Gdop = new double[KX][KY];
         double[][] Mult = new double[PointList.size()][PointList.size()];
 
-
-
-
-        for (int i = 0; i < PointList.size(); i++)
-        {
+        for (int i = 0; i < PointList.size(); i++) {
             SatPos[0][i] = PointList.get(i).x;
             SatPos[1][i] = PointList.get(i).y;
         }
-
-
-        /*if (n < 0) {
-            System.exit(1); // or break;
-        }*/
         for (int x = 0; x < KX; x = x + h) {
             for (int y = 0; y < KY; y = y + h) {
                 while (k < PointList.size()) {
@@ -53,146 +46,145 @@ private MainActivity Main;
                 Gdop[x][y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
 
                 //Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
-
             }
-
         }
+        /*
+        Thread t;
+        t = new Thread(new GDOPThread(Gdop, 0, 0, KX, KY / 2, PointList));
+        t.setName("Поток " + 1);
+        t.start();
+        Thread t2;
+        t2 = new Thread(new GDOPThread(Gdop, 0, KY / 2, KX, KY, PointList));
+        t2.setName("Поток " + 2);
+        t2.start();
+   /*     Thread t3;
+        t3 = new Thread(new GDOPThread(Gdop, KX/2, 0, KX, KY/2 , PointList));
+        t3.setName("Поток " + 2);
+        t3.start();
+        Thread t4;
+        t4 = new Thread(new GDOPThread(Gdop, KY/2, KY/2, KX, KY, PointList));
+        t4.setName("Поток " + 2);
+        t4.start();*/
+        /*if (n < 0) {
+            System.exit(1); // or break;
+        }*/
+
         return Gdop;
-
     }
 
+    class GDOPThread implements Runnable {
+        int StartX, StartY, FinishX, FinishY;
+        int h = 1; // шаг
+        //int n = Main.Key; // количество маяков
+        int k = 0; // счёт
+        int[][] SatPos;// = new int[2][PointList.size()];
+        int satPosCount;
+        double[][] H;// = new double[PointList.size()][2];
+        double[][] D;// = new double[PointList.size()][2]; /// копия  H
+        double[][] Mult;// = new double[PointList.size()][PointList.size()];
+        double[][] res;//результирующая матрица GDOP
 
-/*------------------------------------------Траспонирование матрицы(kalich)-----------------------------------------*/
-public static double [][] FunT(double[][] A) {
-    double[][] An = new double[A[0].length][A.length];
-    for (int i = 0; i < A.length; ++i)
-        for (int j = 0; j < A[0].length; ++j)
-            An[j][i] = A[i][j];
-    return An;
-}
-
-/*------------------------------------------Перемножение матриц(kalich)-----------------------------------------*/
-public static double[][] Multi(double[][] A, double[][] B) {
-    int N = A.length;
-    //int M = A[0].length;
-    int N1 = B.length;
-    int M1 = B[0].length;
-    //if (M != N1) {
-     //   System.exit(1);
-    //}
-    double[][] An = new double[N][M1];
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M1; j++) {
-            An[i][j] = 0;
-            for (int s = 0; s < N1; s++) {
-                An[i][j] += A[i][s] * B[s][j];
+        GDOPThread(double[][] res, int startX, int startY, int finishX, int finishY, ArrayList<Point> pointList) {
+            StartX = startX;
+            StartY = startY;
+            FinishX = finishX;
+            FinishY = finishY;
+            satPosCount = pointList.size();
+            SatPos = new int[2][satPosCount];
+            for (int i = 0; i < pointList.size(); i++) {
+                SatPos[0][i] = pointList.get(i).x;
+                SatPos[1][i] = pointList.get(i).y;
             }
+            H = new double[satPosCount][2];
+            D = new double[satPosCount][2];
+            Mult = new double[satPosCount][satPosCount];
+            this.res = res;
         }
 
-    }
-    return An;
-}
- /*------------------------------------------Нахождение обратной матрицы-----------------------------------------*/
-    public static double[][] invert(double a[][])
-    {
-        int n = a.length;
-        double x[][] = new double[n][n];
-        double b[][] = new double[n][n];
-        int index[] = new int[n];
-        for (int i=0; i<n; ++i)
-            b[i][i] = 1;
+        @Override
+        public void run() {
+            // synchronized (res) {
+            for (int x = StartX; x < FinishX; x = x + h) {
+                for (int y = StartY; y < FinishY; y = y + h) {
+                    while (k < satPosCount) {
+                        H[k][0] = ((x - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(x - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(y - SatPos[1][k], 2))));
+                        H[k][1] = ((y - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(x - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(y - SatPos[1][k], 2))));
+                        k += 1;
+                    }
+                    k = 0;
+                    D = H;
+                    Matrix A = new Matrix(H);
+                    res[x][y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
 
-        // Ебашим гаусом
-        gaussian(a, index);
-
-        // Update the matrix b[i][j] with the ratios stored
-        for (int i=0; i<n-1; ++i)
-            for (int j=i+1; j<n; ++j)
-                for (int k=0; k<n; ++k)
-                    b[index[j]][k] -= a[index[j]][i]*b[index[i]][k];
-
-        // Perform backward substitutions
-        for (int i=0; i<n; ++i)
-        {
-            x[n-1][i] = (b[index[n-1]][i] / a[index[n-1]][n-1]);
-            for (int j=n-2; j>=0; --j)
-            {
-                x[j][i] = b[index[j]][i];
-                for (int k=j+1; k<n; ++k)
-                {
-                    x[j][i] -= a[index[j]][k]*x[k][i];
-                }
-                x[j][i] /= a[index[j]][j];
-            }
-        }
-        return x;
-    }
-
-// Method to carry out the partial-pivoting Gaussian
-// elimination.  Here index[] stores pivoting order.
-
-    public static void gaussian(double a[][], int index[])
-    {
-        int n = index.length;
-        double c[] = new double[n];
-
-        // Initialize the index
-        for (int i=0; i<n; ++i)
-            index[i] = i;
-
-        // Find the rescaling factors, one from each row
-        for (int i=0; i<n; ++i)
-        {
-            double c1 = 0;
-            for (int j=0; j<n; ++j)
-            {
-                double c0 = java.lang.Math.abs(a[i][j]);
-                if (c0 > c1) c1 = c0;
-            }
-            c[i] = c1;
-        }
-
-        // Search the pivoting element from each column
-        int k = 0;
-        for (int j=0; j<n-1; ++j)
-        {
-            double pi1 = 0;
-            for (int i=j; i<n; ++i)
-            {
-                double pi0 = java.lang.Math.abs(a[index[i]][j]);
-                pi0 /= c[index[i]];
-                if (pi0 > pi1)
-                {
-                    pi1 = pi0;
-                    k = i;
                 }
             }
-
-            // Interchange rows according to the pivoting order
-            int itmp = index[j];
-            index[j] = index[k];
-            index[k] = itmp;
-            for (int i=j+1; i<n; ++i)
-            {
-                double pj = (a[index[i]][j] / a[index[j]][j]);
-
-                // Record pivoting ratios below the diagonal
-                a[index[i]][j] = pj;
-
-                // Modify other elements accordingly
-                for (int l=j+1; l<n; ++l)
-                    a[index[i]][l] -= pj*a[index[j]][l];
-            }
+            //}
         }
     }
+  /*  public class CalcThread extends Thread
+    {
+        int StartX,StartY,FinishX,FinishY;
+        int h = 1; // шаг
+        //int n = Main.Key; // количество маяков
+        int k = 0; // счёт
+        int[][] SatPos;// = new int[2][PointList.size()];
+        int satPosCount;
+        double[][] H;// = new double[PointList.size()][2];
+        double[][] D;// = new double[PointList.size()][2]; /// копия  H
+        double[][] Gdop;// = new double[KX][KY];
+        double[][] Mult;// = new double[PointList.size()][PointList.size()];
 
-    /*------------------------------------------Trace(kalich)-----------------------------------------*/
-public static double Trace(double [][] A)  {
-    double Sum = 0;
-    for(int i = 0; i < A.length; i++)
-            Sum += A[i][i];
-    return Sum;
-}
+        public CalcThread(int startX, int startY, int finishX, int finishY,ArrayList<Point> pointList) {
+            StartX = startX;
+            StartY = startY;
+            FinishX = finishX;
+            FinishY = finishY;
+            satPosCount=pointList.size();
+            SatPos = new int[2][satPosCount];
+            H = new double[satPosCount][2];
+            D = new double[satPosCount][2];
+            Gdop = new double[finishX-startX][finishY-startY];
+            Mult = new double[satPosCount][satPosCount];
+        }
 
+        @Override
+        public void run() {
+
+            for (int x = StartX; x < FinishX; x = x + h) {
+                for (int y = StartY; y < FinishY; y = y + h) {
+                    while (k < satPosCount) {
+                        H[k][0] = ((x - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(x - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(y - SatPos[1][k], 2))));
+                        H[k][1] = ((y - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(x - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(y - SatPos[1][k], 2))));
+                        k += 1;
+                    }
+                    k = 0;
+                    D = H;
+                    Matrix A = new Matrix(H);
+                    Gdop[x][y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+
+                    //Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
+                }
+            }
+            //Do some stuff
+        }
+    }
+   private class CalcGDOP extends AsyncTask<ArrayList<Point>, Void, double[][]> {
+        /**
+         * The system calls this to perform work in a worker thread and
+         * delivers it the parameters given to AsyncTask.execute()
+         */
+    //  protected double[][] doInBackground(ArrayList<Point>... satpos) {
+
+    //    return null;
+    // }
+
+    /**
+     * The system calls this to perform work in the UI thread and delivers
+     * the result from doInBackground()
+     */
+    //protected void onPostExecute(double[][] result) {
+
+    //    }
+    // }
 }
 

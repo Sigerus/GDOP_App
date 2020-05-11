@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import Jama.Matrix;
 
-public class MatrixMath {
+public class ToF_Method {
 
 private MainActivity Main;
     private MainActivity.RoomImageView roomImageView;
@@ -14,16 +14,12 @@ private MainActivity Main;
     public double [][] main(ArrayList<Point> PointList,int KX,int KY) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
-       // int KX = 1315; // конечная координата OX
-      //  int KY = 1315; // конечная координата OY
         int h = 1; // шаг
-        //int n = Main.Key; // количество маяков
         int k = 0; // счёт
         int[][] SatPos = new int[2][PointList.size()];
         double[][] H = new double [PointList.size()][2];
-        double[][] D = new double [PointList.size()][2]; /// копия  H
         double[][] Gdop = new double[KX][KY];
-        double[][] Mult = new double[PointList.size()][PointList.size()];
+
 
 
         for (int i = 0; i < PointList.size(); i++)
@@ -41,7 +37,6 @@ private MainActivity Main;
                     k += 1;
                 }
                 k = 0;
-                D = H;
                 Matrix A = new Matrix(H);
                 Gdop[x][y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
 

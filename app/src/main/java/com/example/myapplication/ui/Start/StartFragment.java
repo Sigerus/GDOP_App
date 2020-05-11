@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.Start;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ public class StartFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d(LOG_TAG, "Button click in Fragment2");
+                Intent intent=new Intent(StartFragment.this.getActivity(), MainActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -3,4 +3,14 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+
+    <color name="colorGDOP5">#FF0000</color>
+    <color name="colorGDOP45">#FF8000</color>
+    <color name="colorGDOP4">#FFFF00</color>
+    <color name="colorGDOP35">#80FF00</color>
+    <color name="colorGDOP3">#00FF00</color>
+    <color name="colorGDOP25">#00FF80</color>
+    <color name="colorGDOP2">#00FFFF</color>
+    <color name="colorGDOP15">#0080FF</color>
+    <color name="colorGDOP1">#0000FF</color>
 </resources>

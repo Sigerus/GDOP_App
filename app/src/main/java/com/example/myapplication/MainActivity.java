@@ -228,7 +228,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
         if(Arrays.toString(method).equals("ToF")) {
             ToF_Method ToF_method = new ToF_Method();
           return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
-        }else {
+        } else {
            TDoA_Method TDoA_method = new TDoA_Method();
             return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
         }

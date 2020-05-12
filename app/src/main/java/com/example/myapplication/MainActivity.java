@@ -125,9 +125,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Flag = true;
-                }else{
                     Flag = false;
+                } else {
+                    Flag = true;
                 }
 
             }
@@ -225,8 +225,10 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
     /** The system calls this to perform work in a worker thread and
      * delivers it the parameters given to AsyncTask.execute() */
     protected double[][] doInBackground(String... method) {
-        if(Arrays.toString(method).equals("ToF")) {
+//        if(Arrays.toString(method).equals("ToF")) {
+        if(Flag) {
             ToF_Method ToF_method = new ToF_Method();
+            Flag = true;
           return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
         } else {
            TDoA_Method TDoA_method = new TDoA_Method();

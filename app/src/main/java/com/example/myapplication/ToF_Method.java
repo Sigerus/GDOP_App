@@ -45,6 +45,7 @@ private MainActivity Main;
             }
 
         }
+
         return Gdop;
 
     }

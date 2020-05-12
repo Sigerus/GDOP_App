@@ -1,9 +1,10 @@
 package com.example.myapplication.ui.Start;
 
 
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,14 +15,17 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,21 +42,33 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
     TextView tv2;
     EditText Beacons;
+    Switch Switch;
     Button Ok;
     Button Plus;
     Button Go;
+    //////////////////////////////////////////////////
+    Button Room;
+    final Context context = this;
+    public boolean FlagRoom = false;
+    /////////////////////////////////////////////////
     private int getX;
     private int getY;
     private RoomImageView roomImageView;
     //private GDOPImageView gdopImageView;
-    private MatrixMath MatrixMath;
+    private ToF_Method ToF_method;
+    private TDoA_Method TDoA_method;
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
     String Touch = "";
     String MoveTouch = "";
     public int Key = 0;
+    public int Corners = 0;
     private ImageView drawingImageView;
+    public boolean Flag = true;
+
+
+
 
 
     @Override
@@ -63,11 +79,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         tv = new TextView(this);
         tv2 = new TextView(this);
         tv = findViewById(R.id.textView3);
-        //tv2 = findViewById(R.id.textView);
+      //  tv2 = findViewById(R.id.textView);
         Beacons = findViewById(R.id.editText3);
         Ok = findViewById(R.id.button);
+        Switch = findViewById(R.id.switch2);
         Plus = findViewById(R.id.button2);
         Go = findViewById(R.id.button3);
+        Room = findViewById(R.id.button5);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
 
@@ -105,6 +123,52 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     */
 
         ////////////////////////////////
+        Switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Flag = false;
+                }else{
+                    Flag = true;
+                }
+
+            }
+        });
+
+        Room.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                LayoutInflater li = LayoutInflater.from(context);
+                View roomdialogView = li.inflate(R.layout.roomdialog, null);
+                AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
+                mDialogBuilder.setView(roomdialogView);
+                final EditText userInput = (EditText) roomdialogView.findViewById(R.id.input_text);
+                mDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //Вводим текст и отображаем в строке ввода на основном экране:
+                                        //  final_text.setText(userInput.getText());
+                                        Corners = Integer.parseInt(userInput.getText().toString());
+                                        if(Corners > 2) {
+                                            FlagRoom = true;
+                                        }
+                                    }
+                                })
+                        .setNegativeButton("Отмена",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alertDialog = mDialogBuilder.create();
+
+                //и отображаем его:
+                alertDialog.show();
+
+            }
+        });
 
         Ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,7 +199,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
 
                 double[][] Gdop;
-                MatrixMath matrixMath = new MatrixMath();
+                //MatrixMath matrixMath = new MatrixMath();
                 Log.d("Matrix calc started", String.valueOf(SystemClock.elapsedRealtimeNanos()));
                 //создаем отдельный поток для расчета матрицы
                 new CalcGDOP().execute();
@@ -163,8 +227,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         /** The system calls this to perform work in a worker thread and
          * delivers it the parameters given to AsyncTask.execute() */
         protected double[][] doInBackground(String... method) {
-            MatrixMath matrixMath = new MatrixMath();
-            return matrixMath.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+          //  if(Arrays.toString(method).equals("ToF")) {
+                if(Flag) {
+                ToF_Method ToF_method = new ToF_Method();
+                Flag=true;
+                return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+            } else {
+                TDoA_Method TDoA_method = new TDoA_Method();
+                return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+            }
         }
 
         /** The system calls this to perform work in the UI thread and delivers
@@ -418,8 +489,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 //tv.setText("");
                 tv.setText(Touch);
                 //Touch = "";
+                /*if(FlagRoom) {
+                    if (roomImageView.CornerList.size() != Corners) {
+                        roomImageView.CornerList.add(new Point(getX, getY));
+                        roomImageView.invalidateImage();
+                    }
+                }*/
                 break;
             }
+
             //остался баг с пожиранием маяков
             case MotionEvent.ACTION_MOVE: {
                 for (int i = 0; i < roomImageView.PointList.size(); i++) {
@@ -427,6 +505,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     int offsetY = abs(getY - roomImageView.PointList.get(i).y);
                     if (offsetX < 50 && offsetY < 50) {
                         Captured = true;
+                        boolean Trace = false;
                         CapturedPointIndex = i;
                         if (getX < 0) {
                             roomImageView.PointList.get(i).x = 0;
@@ -442,6 +521,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                             roomImageView.PointList.get(i).x = getX;
                             roomImageView.PointList.get(i).y = getY;
                         }
+                        //for (int j = 0; j < roomImageView.PointList.size(); j++)
+                        //{
+
+                        //}
+                        /*for (int j = 0; j < roomImageView.PointList.size(); j++)
+                        {
+                            if(getX == roomImageView.PointList.get(j).x && getY == roomImageView.PointList.get(j).y){
+                                break;
+                            }
+                        }*/
                     }
                     roomImageView.invalidateImage();
                 }
@@ -463,6 +552,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
         return true;
     }
+
 
     class DrawView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -533,10 +623,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     }
 
+
+
     public static class RoomImageView extends androidx.appcompat.widget.AppCompatImageView {
         //public final int MaxSatCount = Integer.parseInt(Beacons.getText().toString());
         //public int MaxSatCount = 0;
         public ArrayList<Point> PointList = new ArrayList<Point>();
+        public ArrayList<Point> CornerList = new ArrayList<Point>();
         private Point point;
         Bitmap GDOPbitmap;
         Bitmap bitmapAlpha;
@@ -659,6 +752,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             Log.d("Render finished", String.valueOf(SystemClock.elapsedRealtimeNanos()));
         }
 
+
         public void DrawBitMap(Canvas canvas) {
             super.draw(canvas);
 
@@ -755,6 +849,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(30f);
+
             if (GDOP != null) {
                 // DrawGDOP(canvas);
                 DrawBitMap(canvas);
@@ -775,6 +870,27 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
             }
+            Paint RoomLine = new Paint();
+            RoomLine.setColor(Color.BLACK);
+            RoomLine.setStrokeWidth(40f);
+            Paint Corner = new Paint();
+            Corner.setColor(Color.BLACK);
+
+            /*if (CornerList.size() != 0) {
+                for (Point p : CornerList) {
+                    canvas.drawPoint(p.x, p.y, Corner);
+                    invalidate();
+                }
+                if (CornerList.size() > 2) {
+                    int flag = 0;
+                for (int i = 0; i < CornerList.size(); i++) {
+                    canvas.drawLine(CornerList.get(i).x, CornerList.get(i).y, CornerList.get(i + 1).x, CornerList.get(i + 1).y, RoomLine);
+                    flag = i;
+                }
+                canvas.drawLine(CornerList.get(flag).x, CornerList.get(flag).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
+            }
+            }*/
+
         }
     }
 
@@ -940,3 +1056,4 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }*/
 
 }
+

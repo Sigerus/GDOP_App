@@ -225,13 +225,13 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
     /** The system calls this to perform work in a worker thread and
      * delivers it the parameters given to AsyncTask.execute() */
     protected double[][] doInBackground(String... method) {
-       // if(Arrays.toString(method).equals("ToF")) {
-          //  ToF_Method ToF_method = new ToF_Method();
-         // return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
-        //}else {
+        if(Arrays.toString(method).equals("ToF")) {
+            ToF_Method ToF_method = new ToF_Method();
+          return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+        }else {
            TDoA_Method TDoA_method = new TDoA_Method();
             return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
-        //}
+        }
     }
 
     /** The system calls this to perform work in the UI thread and delivers
@@ -501,6 +501,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                     int offsetY = abs(getY - roomImageView.PointList.get(i).y);
                     if (offsetX < 50 && offsetY < 50) {
                         Captured = true;
+                        boolean Trace = false;
                         CapturedPointIndex = i;
                         if (getX < 0) {
                             roomImageView.PointList.get(i).x = 0;
@@ -516,6 +517,16 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                             roomImageView.PointList.get(i).x = getX;
                             roomImageView.PointList.get(i).y = getY;
                         }
+                        //for (int j = 0; j < roomImageView.PointList.size(); j++)
+                        //{
+
+                        //}
+                        /*for (int j = 0; j < roomImageView.PointList.size(); j++)
+                        {
+                            if(getX == roomImageView.PointList.get(j).x && getY == roomImageView.PointList.get(j).y){
+                                break;
+                            }
+                        }*/
                     }
                     roomImageView.invalidateImage();
                 }
@@ -834,9 +845,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(30f);
-            Paint Corner = new Paint();
-            Corner.setColor(Color.WHITE);
-            Corner.setStrokeWidth(40f);
+
             if (GDOP != null) {
                // DrawGDOP(canvas);
                 DrawBitMap(canvas);
@@ -857,16 +866,27 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
             }
-            /*if (CornerList.size() != 0)
-            {
-                int flag = 0;
-                for(int i = 0; i < CornerList.size(); i++)
-                {
-                    canvas.drawLine(CornerList.get(i).x, CornerList.get(i).y, CornerList.get(i + 1).x, CornerList.get(i + 1).y, Corner);
+            Paint RoomLine = new Paint();
+            RoomLine.setColor(Color.BLACK);
+            RoomLine.setStrokeWidth(40f);
+            Paint Corner = new Paint();
+            Corner.setColor(Color.BLACK);
+
+            /*if (CornerList.size() != 0) {
+                for (Point p : CornerList) {
+                    canvas.drawPoint(p.x, p.y, Corner);
+                    invalidate();
+                }
+                if (CornerList.size() > 2) {
+                    int flag = 0;
+                for (int i = 0; i < CornerList.size(); i++) {
+                    canvas.drawLine(CornerList.get(i).x, CornerList.get(i).y, CornerList.get(i + 1).x, CornerList.get(i + 1).y, RoomLine);
                     flag = i;
                 }
-                canvas.drawLine(CornerList.get(flag).x, CornerList.get(flag).y, CornerList.get(0).x, CornerList.get(0).y, Corner);
+                canvas.drawLine(CornerList.get(flag).x, CornerList.get(flag).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
+            }
             }*/
+
         }
     }
 

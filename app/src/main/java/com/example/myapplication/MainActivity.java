@@ -15,12 +15,14 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -32,9 +34,9 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.random;
 
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
@@ -52,21 +54,22 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int getX;
     private int getY;
     private RoomImageView roomImageView;
+    //private CoordMap drawingImageView;
     //private GDOPImageView gdopImageView;
     private ToF_Method ToF_method;
     private TDoA_Method TDoA_method;
+////////////////////////////////////////////////
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
+///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
     public int Key = 0;
     public int Corners = 0;
     private ImageView drawingImageView;
     public boolean Flag = true;
-
-
-
+//    private CoordMap coordMap;
 
 
     @Override
@@ -90,15 +93,18 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 // плохой код. только для демонстрации
         // imageView.setImageDrawable(new DrawView(this));
         roomImageView = (RoomImageView) findViewById(R.id.imageView);
+        //drawingImageView = (ImageView) findViewById(R.id.imageView);
        // gdopImageView = (GDOPImageView) findViewById(R.id.imageView2);
         roomImageView.setOnTouchListener(this);
         //////////////////////////
-
-        /*
-        drawingImageView = (ImageView) this.findViewById(R.id.imageView);
-        Bitmap bitmap = Bitmap.createBitmap((int) getWindowManager()
-                .getDefaultDisplay().getWidth(), (int) getWindowManager()
-                .getDefaultDisplay().getHeight(), Bitmap.Config.ARGB_8888);
+        drawingImageView = (ImageView) findViewById(R.id.imageView);
+        //Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        Function(size);
+        pointImageWidth = size.x;
+        pointImageHeight = size.y;
+        Bitmap bitmap = Bitmap.createBitmap((int) pointImageWidth, pointImageHeight , Bitmap.Config.ARGB_8888);
+//        Bitmap bitmap = Bitmap.createBitmap(drawingImageView.getWidth(), drawingImageView.getHeight(),Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawingImageView.setImageBitmap(bitmap);
 
@@ -106,11 +112,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         paint.setColor(Color.DKGRAY);
         paint.setStrokeWidth(3);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        pointImageWidth = size.x;
-        pointImageHeight = size.y;
+//        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        pointImageWidth = size.x;
+//        pointImageHeight = size.y;
 
 
 
@@ -118,7 +124,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             canvas.drawLine(0, i, pointImageWidth, i, paint);
         for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
             canvas.drawLine(i, 0, i, pointImageHeight, paint);
-    */
+
 
         ////////////////////////////////
         Switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -221,6 +227,84 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
         });
     }
+   /* public Point Function2(Point size)
+    {
+        WindowManager windowmanager = (WindowManager) this.getContext() .getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowmanager.getDefaultDisplay();
+        Point size = new Point();
+        try {
+            display.getRealSize(size);
+        }
+        catch (NoSuchMethodError err)
+        {
+            display.getSize(size);
+        }
+        int width = size.x;
+        int height = size.y;
+    }*/
+
+    public Point Function(Point size)
+    {
+        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+        display.getSize(size);
+        return size;
+    }
+/*public class ImageSize extends androidx.appcompat.widget.AppCompatImageView
+{
+
+    public ImageSize(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+}
+
+public class CoordMap extends androidx.appcompat.widget.AppCompatImageView
+{
+    Paint paint;
+    Bitmap bitmap;
+    public CoordMap(Context context) {
+        super(context);
+        paint = new Paint();
+        paint.setColor(Color.DKGRAY);
+        paint.setStrokeWidth(3);
+        bitmap = Bitmap.createBitmap(roomImageView.getWidth(), roomImageView.getHeight(),Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        roomImageView.setImageBitmap(bitmap);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        pointImageWidth = size.x;
+        pointImageHeight = size.y;
+        for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
+            canvas.drawLine(0, i, pointImageWidth, i, paint);
+        for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
+            canvas.drawLine(i, 0, i, pointImageHeight, paint);
+        }
+        @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.drawBitmap(bitmap, 0,200,paint);
+    }
+    }
+
+/*Canvas canvas = new Canvas(bitmap);
+        drawingImageView.setImageBitmap(bitmap);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.DKGRAY);
+        paint.setStrokeWidth(3);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        pointImageWidth = size.x;
+        pointImageHeight = size.y;
+
+
+
+        for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
+            canvas.drawLine(0, i, pointImageWidth, i, paint);
+        for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
+            canvas.drawLine(i, 0, i, pointImageHeight, paint);*/
 private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
     /** The system calls this to perform work in a worker thread and
      * delivers it the parameters given to AsyncTask.execute() */
@@ -487,12 +571,12 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                 //tv.setText("");
                 tv.setText(Touch);
                 //Touch = "";
-                /*if(FlagRoom) {
+                if(FlagRoom) {
                     if (roomImageView.CornerList.size() != Corners) {
                         roomImageView.CornerList.add(new Point(getX, getY));
                         roomImageView.invalidateImage();
                     }
-                }*/
+                }
                 break;
             }
 
@@ -620,7 +704,9 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
         }
 
     }
-
+//    public static class Room extends androidx.appcompat.widget.AppCompatImageView {
+//
+//    }
 
 
     public static class RoomImageView extends androidx.appcompat.widget.AppCompatImageView {
@@ -874,12 +960,12 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
             Paint Corner = new Paint();
             Corner.setColor(Color.BLACK);
 
-            /*if (CornerList.size() != 0) {
+//            if (CornerList.size() != 0) {
                 for (Point p : CornerList) {
                     canvas.drawPoint(p.x, p.y, Corner);
                     invalidate();
                 }
-                if (CornerList.size() > 2) {
+                if (CornerList.size() > 10) {
                     int flag = 0;
                 for (int i = 0; i < CornerList.size(); i++) {
                     canvas.drawLine(CornerList.get(i).x, CornerList.get(i).y, CornerList.get(i + 1).x, CornerList.get(i + 1).y, RoomLine);
@@ -887,7 +973,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                 }
                 canvas.drawLine(CornerList.get(flag).x, CornerList.get(flag).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
             }
-            }*/
+//            }
 
         }
     }

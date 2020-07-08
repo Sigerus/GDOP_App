@@ -960,20 +960,20 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
             Paint Corner = new Paint();
             Corner.setColor(Color.BLACK);
 
-//            if (CornerList.size() != 0) {
+            if (CornerList.size() != 0) {
                 for (Point p : CornerList) {
                     canvas.drawPoint(p.x, p.y, Corner);
                     invalidate();
                 }
-                if (CornerList.size() > 10) {
+                if (CornerList.size() > 3) {
                     int flag = 0;
-                for (int i = 0; i < CornerList.size(); i++) {
+                for (int i = 0; i < CornerList.size() - 1; i++) {
                     canvas.drawLine(CornerList.get(i).x, CornerList.get(i).y, CornerList.get(i + 1).x, CornerList.get(i + 1).y, RoomLine);
                     flag = i;
                 }
                 canvas.drawLine(CornerList.get(flag).x, CornerList.get(flag).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
             }
-//            }
+           }
 
         }
     }

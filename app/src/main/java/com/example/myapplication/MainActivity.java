@@ -66,6 +66,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
+    private int gridcountX=10;
+    private int gridcountY=19;
     ///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
@@ -173,12 +175,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 if (EditSt.getText().toString().equals("") || EditSt.getText().toString().equals("0")) {
                     tv.setText("Введите размеры сетки");
                 } else {
-                    String y;
-                    y=(EditSt.getText().toString());
+                    int x,y;
+                    x=(Integer.parseInt(EditSt.getText().toString()));
+                    y=(Integer.parseInt(EditSt.getText().toString()));
                     Point size = new Point();
                     Function(size);
-                    pointImageWidth = size.x;
-                    pointImageHeight = size.y;
+                    //pointImageWidth = 1200;
+
+                   pointImageWidth = roomImageView.getWidth();
+                    //pointImageHeight = size.y;
+                    pointImageHeight = roomImageView.getHeight();
                     Bitmap bitmap = Bitmap.createBitmap((int) pointImageWidth, pointImageHeight , Bitmap.Config.ARGB_8888);
 //        Bitmap bitmap = Bitmap.createBitmap(drawingImageView.getWidth(), drawingImageView.getHeight(),Bitmap.Config.ARGB_8888);
                     final Canvas canvas = new Canvas(bitmap);
@@ -211,33 +217,33 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                   //  canvas.drawText(y,200,200,paint2);
 
-                    for (int i = 200; i <= 2000; i += ScreenStep) { // Горизонтальные линии
-                        k=Integer.parseInt(y);
+                    for (int i = 0; i <= pointImageHeight-100; i += ScreenStep) { // Горизонтальные линии
+                      //  k=Integer.parseInt(y);
 
-                    p=(k+i);
-                    y3=Integer.toString(p);
-                    y2=Integer.toString(Integer.parseInt(y)+2000-i);
+                   // p=(k+i);
+                  //  y3=Integer.toString(p);
+                  //  y2=Integer.toString(Integer.parseInt(y)+1800-i);
 
                        // canvas.drawText(y2,100,200,100,i,shadowPaint);
-                        canvas.drawText(y2, 0, i, shadowPaint);
+                        canvas.drawText(String.valueOf(gridcountY*y-(y+y*i/ScreenStep)), 0, i, shadowPaint);
                       //  canvas.drawText(y3,i+100,2200,shadowPaint);
                     }
-                    for (int i = 100; i <= 800; i += ScreenStep) {
-                        k=Integer.parseInt(y);
-                        p=(k-100+i);
-                        y3=Integer.toString(p);
-                        canvas.drawText(y3,i+100,2150,shadowPaint);
+                    for (int i = 0; i <= pointImageHeight; i += ScreenStep) {
+                      //  k=Integer.parseInt(y);
+                      //  p=(k+i);
+                       // y3=Integer.toString(p);
+                        canvas.drawText(String.valueOf(x+x*i/ScreenStep),i+200,1850,shadowPaint);
 
                     }
-
-                        canvas.drawLine(0,2100,pointImageWidth,2100,paint1 );//ох
+                        canvas.drawText(Integer.toString(0),50,1850,shadowPaint);
+                        canvas.drawLine(0,1800,pointImageWidth,1800,paint1 );//ох
                     canvas.drawLine(100,0,100,pointImageHeight,paint1 );//оу
 
-                    canvas.drawLine(100,0,130,70,paint1 );//оу правая стрелка
-                    canvas.drawLine(100,0,70,70,paint1 );//оу левая стрелка
-
-                    canvas.drawLine(pointImageWidth,2100,pointImageWidth - 70,2070,paint1 );//ох верхняя стрелка
-                    canvas.drawLine(pointImageWidth,2100,pointImageWidth - 70,2130,paint1 );//ох верхняя стрелка
+                  //  canvas.drawLine(100,0,130,70,paint1 );//оу правая стрелка
+                   // canvas.drawLine(100,0,70,70,paint1 );//оу левая стрелка
+//
+                  //  canvas.drawLine(pointImageWidth,2100,pointImageWidth - 70,2070,paint1 );//ох верхняя стрелка
+                   // canvas.drawLine(pointImageWidth,2100,pointImageWidth - 70,2130,paint1 );//ох верхняя стрелка
 
                     for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
                         canvas.drawLine(0, i, pointImageWidth, i, paint);

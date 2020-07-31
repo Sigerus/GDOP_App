@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -41,11 +42,15 @@ import static java.lang.Math.abs;
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
     TextView tv2;
+    TextView tvY1;
     EditText Beacons;
+    EditText EditSt;
     Switch Switch;
     Button Ok;
     Button Plus;
     Button Go;
+    Button ButtonSt;
+
     //////////////////////////////////////////////////
     Button Room;
     final Context context = this;
@@ -54,21 +59,24 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int getX;
     private int getY;
     private RoomImageView roomImageView;
+    //private CoordMap drawingImageView;
     //private GDOPImageView gdopImageView;
     private ToF_Method ToF_method;
     private TDoA_Method TDoA_method;
+    ////////////////////////////////////////////////
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
+    private int gridcountX=10;
+    private int gridcountY=19;
+    ///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
     public int Key = 0;
     public int Corners = 0;
     private ImageView drawingImageView;
     public boolean Flag = true;
-
-
-
+//    private CoordMap coordMap;
 
 
     @Override
@@ -79,8 +87,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         tv = new TextView(this);
         tv2 = new TextView(this);
         tv = findViewById(R.id.textView3);
-      //  tv2 = findViewById(R.id.textView);
+       // tv2 = findViewById(R.id.textView);
         Beacons = findViewById(R.id.editText3);
+        EditSt = findViewById(R.id.editText);
+        ButtonSt= findViewById(R.id.button4);
         Ok = findViewById(R.id.button);
         Switch = findViewById(R.id.switch2);
         Plus = findViewById(R.id.button2);
@@ -92,9 +102,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 // плохой код. только для демонстрации
         // imageView.setImageDrawable(new DrawView(this));
         roomImageView = (RoomImageView) findViewById(R.id.imageView);
+        //drawingImageView = (ImageView) findViewById(R.id.imageView);
         // gdopImageView = (GDOPImageView) findViewById(R.id.imageView2);
         roomImageView.setOnTouchListener(this);
         //////////////////////////
+        drawingImageView = (ImageView) findViewById(R.id.imageView);
+        //Display display = getWindowManager().getDefaultDisplay();
+
+
 
         /*
         drawingImageView = (ImageView) this.findViewById(R.id.imageView);
@@ -170,6 +185,93 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
         });
 
+        ButtonSt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (EditSt.getText().toString().equals("") || EditSt.getText().toString().equals("0")) {
+                    tv.setText("Введите размеры сетки");
+                } else {
+                    int x,y;
+                    x=(Integer.parseInt(EditSt.getText().toString()));
+                    y=(Integer.parseInt(EditSt.getText().toString()));
+                    Point size = new Point();
+                    Function(size);
+                    //pointImageWidth = 1200;
+
+                    pointImageWidth = roomImageView.getWidth();
+                    //pointImageHeight = size.y;
+                    pointImageHeight = roomImageView.getHeight();
+                    Bitmap bitmap = Bitmap.createBitmap((int) pointImageWidth, pointImageHeight , Bitmap.Config.ARGB_8888);
+//        Bitmap bitmap = Bitmap.createBitmap(drawingImageView.getWidth(), drawingImageView.getHeight(),Bitmap.Config.ARGB_8888);
+                    final Canvas canvas = new Canvas(bitmap);
+                    drawingImageView.setImageBitmap(bitmap);
+
+                    final Paint paint = new Paint();
+                    paint.setColor(Color.DKGRAY);
+                    paint.setStrokeWidth(3);
+                    final Paint paint1 = new Paint();
+                    paint1.setColor(Color.BLACK);
+                    paint1.setStrokeWidth(8);
+                    final Paint paint2= new Paint();
+                    paint2.setColor(Color.BLACK);
+                    paint2.setStrokeWidth(50);
+                    //tvY1.setText(Integer.parseInt());
+                    //roomImageView.getHeight();
+
+                    int k;
+                    int p;
+                    Paint shadowPaint = new Paint();
+                    //   shadowPaint.setAntiAlias(true);
+                    // shadowPaint.setColor(Color.WHITE);
+                    shadowPaint.setTextSize(40.0f);
+                    //  shadowPaint.setStrokeWidth(20.0f);
+                    //  shadowPaint.setStyle(Paint.Style.STROKE);
+                    shadowPaint.setShadowLayer(00.0f, 0.0f, 0.0f, Color.BLACK);
+                    String y2;
+                    String y3;
+                    //   canvas.drawText(y, 100, 200, shadowPaint);
+
+                    //  canvas.drawText(y,200,200,paint2);
+
+                    for (int i = 0; i <= pointImageHeight-100; i += ScreenStep) { // Горизонтальные линии
+                        //  k=Integer.parseInt(y);
+
+                        // p=(k+i);
+                        //  y3=Integer.toString(p);
+                        //  y2=Integer.toString(Integer.parseInt(y)+1800-i);
+
+                        // canvas.drawText(y2,100,200,100,i,shadowPaint);
+                        canvas.drawText(String.valueOf(gridcountY*y-(y+y*i/ScreenStep)), 0, i, shadowPaint);
+                        //  canvas.drawText(y3,i+100,2200,shadowPaint);
+                    }
+                    for (int i = 0; i <= pointImageHeight; i += ScreenStep) {
+                        //  k=Integer.parseInt(y);
+                        //  p=(k+i);
+                        // y3=Integer.toString(p);
+                        canvas.drawText(String.valueOf(x+x*i/ScreenStep),i+200,1850,shadowPaint);
+
+                    }
+                    canvas.drawText(Integer.toString(0),50,1850,shadowPaint);
+                    canvas.drawLine(0,1800,pointImageWidth,1800,paint1 );//ох
+                    canvas.drawLine(100,0,100,pointImageHeight,paint1 );//оу
+
+                    //  canvas.drawLine(100,0,130,70,paint1 );//оу правая стрелка
+                    // canvas.drawLine(100,0,70,70,paint1 );//оу левая стрелка
+//
+                    //  canvas.drawLine(pointImageWidth,2100,pointImageWidth - 70,2070,paint1 );//ох верхняя стрелка
+                    // canvas.drawLine(pointImageWidth,2100,pointImageWidth - 70,2130,paint1 );//ох верхняя стрелка
+
+                    for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
+                        canvas.drawLine(0, i, pointImageWidth, i, paint);
+                    for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
+                        canvas.drawLine(i, 0, i, pointImageHeight, paint);
+                    v.setClickable(false);
+
+                }
+            }
+        });
+
+
         Ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,6 +346,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             roomImageView.setGDOP(result);
             CreateBitMap(result);
         }
+    }
+    public Point Function(Point size)
+    {
+        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+        display.getSize(size);
+        return size;
     }
     public void CreateBitMap(double[][] GDOP) {
 

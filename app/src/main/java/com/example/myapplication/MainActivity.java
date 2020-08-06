@@ -46,11 +46,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     Button Ok;
     Button Plus;
     Button Go;
-//////////////////////////////////////////////////
+    Button KO;
+    //////////////////////////////////////////////////
     Button Room;
     final Context context = this;
-    public boolean FlagRoom = false;
-/////////////////////////////////////////////////
+    public static boolean FlagRoom = false;
+    /////////////////////////////////////////////////
     private int getX;
     private int getY;
     private RoomImageView roomImageView;
@@ -58,17 +59,17 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     //private GDOPImageView gdopImageView;
     private ToF_Method ToF_method;
     private TDoA_Method TDoA_method;
-////////////////////////////////////////////////
+    ////////////////////////////////////////////////
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
-///////////////////////////////////////////////
+    ///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
-    public int Key = 0;
-    public int Corners = 0;
+    public static int Key = 0;
+    public static int Corners = 0;
     private ImageView drawingImageView;
-    public boolean Flag = true;
+    public static boolean Flag = true;
 //    private CoordMap coordMap;
 
 
@@ -87,20 +88,26 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Plus = findViewById(R.id.button2);
         Go = findViewById(R.id.button3);
         Room = findViewById(R.id.button5);
+        KO = findViewById(R.id.button4);
+
+
         //tv.setOnTouchListener(this);
         //setContentView(tv);
-/*
+        roomImageView = (RoomImageView) findViewById(R.id.imageView);
+        roomImageView.setOnTouchListener(this);
+
+
+
 // плохой код. только для демонстрации
         // imageView.setImageDrawable(new DrawView(this));
-        roomImageView = (RoomImageView) findViewById(R.id.imageView);
         //drawingImageView = (ImageView) findViewById(R.id.imageView);
-       // gdopImageView = (GDOPImageView) findViewById(R.id.imageView2);
-        roomImageView.setOnTouchListener(this);
-        //////////////////////////
+        // gdopImageView = (GDOPImageView) findViewById(R.id.imageView2);
+        /*
+        //////////////////////////   Сетка
         drawingImageView = (ImageView) findViewById(R.id.imageView);
         //Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
-        Function(size);
+        //Function(size);
         pointImageWidth = size.x;
         pointImageHeight = size.y;
         Bitmap bitmap = Bitmap.createBitmap((int) pointImageWidth, pointImageHeight , Bitmap.Config.ARGB_8888);
@@ -124,8 +131,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             canvas.drawLine(0, i, pointImageWidth, i, paint);
         for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
             canvas.drawLine(i, 0, i, pointImageHeight, paint);
-
 */
+
         ////////////////////////////////
         Switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -134,8 +141,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     Flag = false;
                 } else {
                     Flag = true;
-                }
+                } }});
 
+        KO.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FlagRoom = true;
             }
         });
 
@@ -150,15 +161,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 mDialogBuilder
                         .setCancelable(false)
                         .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //Вводим текст и отображаем в строке ввода на основном экране:
-                                Corners = Integer.parseInt(userInput.getText().toString());
-                                if(Corners > 2) {
-                                    FlagRoom = true;
-                                }
-                            }
-                        })
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //Вводим текст и отображаем в строке ввода на основном экране:
+                                        Corners = Integer.parseInt(userInput.getText().toString());
+                                        if(Corners > 2) {
+                                            FlagRoom = true;
+                                        }
+                                    }
+                                })
                         .setNegativeButton("Отмена",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog,int id) {
@@ -183,6 +194,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     Beacons.setKeyListener(null);
                     v.setClickable(false);
                 }
+                FlagRoom = false;
             }
         });
 
@@ -190,6 +202,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onClick(View v) {
                 Key += 1;
+                FlagRoom = false;
             }
         });
 
@@ -197,7 +210,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), String.valueOf(roomImageView.getWidth()) + " " + String.valueOf(roomImageView.getHeight()), Toast.LENGTH_LONG).show();
-
+                FlagRoom = false;
 
                 double[][] Gdop;
                 Log.d("Matrix calc started", String.valueOf(SystemClock.elapsedRealtimeNanos()));
@@ -209,56 +222,131 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         });
     }
 
-
-    public Point Function(Point size)
+    public class ReturnCorner
     {
-        Display display = getWindowManager().getDefaultDisplay();
-//        Point size = new Point();
-        display.getSize(size);
-        return size;
-    }
-
-private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
-    /** The system calls this to perform work in a worker thread and
-     * delivers it the parameters given to AsyncTask.execute() */
-    protected double[][] doInBackground(String... method) {
-//        if(Arrays.toString(method).equals("ToF")) {
-        if(Flag) {
-            ToF_Method ToF_method = new ToF_Method();
-            Flag = true;
-          return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
-        } else {
-           TDoA_Method TDoA_method = new TDoA_Method();
-            return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+        public int Return()
+        {
+            return Corners;
         }
     }
 
-    /** The system calls this to perform work in the UI thread and delivers
-     * the result from doInBackground() */
-    protected void onPostExecute(double[][] result) {
-        roomImageView.setGDOP(result);
-        CreateBitMap(result);
+    private class Room extends androidx.appcompat.widget.AppCompatImageView
+    {
+
+        public Room(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+        public void CreateBitMap(int a) {
+
+            //Bitmap bitmap1 = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
+        }
+
     }
-}
+
+
+    private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
+        /** The system calls this to perform work in a worker thread and
+         * delivers it the parameters given to AsyncTask.execute() */
+        protected double[][] doInBackground(String... method) {
+//        if(Arrays.toString(method).equals("ToF")) {
+            if(Flag) {
+                ToF_Method ToF_method = new ToF_Method();
+                Flag = true;
+                return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+            } else {
+                TDoA_Method TDoA_method = new TDoA_Method();
+                return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+            }
+        }
+
+        /** The system calls this to perform work in the UI thread and delivers
+         * the result from doInBackground() */
+        protected void onPostExecute(double[][] result) {
+            roomImageView.setGDOP(result);
+            CreateBitMap(result);
+        }
+    }
     public void CreateBitMap(double[][] GDOP) {
 
         // Canvas canvas = new Canvas();
         //int[] colors = new int[roomImageView.getWidth() * roomImageView.getHeight()];
-       //Bitmap bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
-       Bitmap bitmap = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
+        //Bitmap bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
+        Bitmap bitmap = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
         //Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        boolean indintersection = false;
+
+        /*for (int k = 0; k < roomImageView.CornerList.size() - 1; k++) {
+            double ax1 = roomImageView.getWidth();
+            double ay1 = roomImageView.getHeight();
+            double ax2 = roomImageView.PointList.get(k).x;
+            double ay2 = roomImageView.PointList.get(k).y;
+
+            double bx1 = roomImageView.CornerList.get(k).x;
+            double by1 = roomImageView.CornerList.get(k).y;
+            double bx2 = roomImageView.CornerList.get(k + 1).x;
+            double by2 = roomImageView.CornerList.get(k + 1).y;
+
+
+            double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
+            double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
+            double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
+            double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
+            if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                indintersection = true;
+            }
+        }*/
+
+        /*
+        for (int k = 0; k < roomImageView.PointList.size(); k++)
+        {
+            double ax1 = roomImageView.getWidth();
+            double ay1 = roomImageView.getHeight();
+            double ax2 = roomImageView.PointList.get(k).x;
+            double ay2 = roomImageView.PointList.get(k).y;
+            indintersection = false;
+            for (int m = 0; m < roomImageView.CornerList.size()-1; m++) {
+                double bx1 = roomImageView.CornerList.get(m).x;
+                double by1 = roomImageView.CornerList.get(m).y;
+                double bx2 = roomImageView.CornerList.get(m + 1).x;
+                double by2 = roomImageView.CornerList.get(m + 1).y;
+                double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
+                double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
+                double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
+                double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
+                if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                    indintersection = true;
+                }
+
+            }
+        }
+        */
         for (int i = 0; i < GDOP.length; i++)
             for (int j = 0; j < GDOP[0].length; j++) {
                 // Paint paint = new Paint();
+                /*for (int k = 0; k < roomImageView.PointList.size(); k++) {
+                    double ax1 = i;
+                    double ay1 = j;
+                    double ax2 = roomImageView.PointList.get(k).x;
+                    double ay2 = roomImageView.PointList.get(k).y;
+                    for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
+                        double bx1 = roomImageView.CornerList.get(m).x;
+                        double by1 = roomImageView.CornerList.get(m).y;
+                        double bx2 = roomImageView.CornerList.get(m + 1).x;
+                        double by2 = roomImageView.CornerList.get(m + 1).y;
+                        double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
+                        double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
+                        double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
+                        double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
+                        if ((v1 * v2 < 0) && (v3 * v4 < 0)) {*/
                 if (GDOP[i][j] <= 1) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP1,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP1));
                     //canvas.drawCircle(i, j,1, paint);
                     //canvas.drawPoint(i, j, paint);
                     //  invalidate();
                     //  break;
                 } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP15,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
                     //canvas.drawCircle(i, j,1, paint);
                     //canvas.drawPoint(i, j, paint);
@@ -266,7 +354,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                     //  invalidate();
                     //  break;
                 } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP2,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP2));
                     //canvas.drawCircle(i, j,1, paint);
                     //canvas.drawPoint(i, j, paint);
@@ -274,22 +362,22 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                     //   invalidate();
                     //  break;
                 } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP25,getTheme()));
-                   // paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
+                    // paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
                     //canvas.drawPoint(i, j, paint);
-                   // canvas.drawPoint(i, j, paint);
+                    // canvas.drawPoint(i, j, paint);
                     //  invalidate();
                     //   break;
                 } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP3,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
                     // paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP3));
                     //canvas.drawCircle(i, j,1, paint);
-                   // canvas.drawPoint(i, j, paint);
+                    // canvas.drawPoint(i, j, paint);
                     //canvas.drawPoint(i, j, paintRED);
                     //  invalidate();
                     //  break;
                 } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP35,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP35));
                     //canvas.drawCircle(i, j,1, paint);
                     //canvas.drawPoint(i, j, paint);
@@ -297,14 +385,14 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                     //   invalidate();
                     // break;
                 } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP4,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP4));
                     //canvas.drawPoint(i, j, paint);
                     //canvas.drawPoint(i, j, paintRED);
                     //   invalidate();
                     // break;
                 } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP45,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP45));
                     //canvas.drawCircle(i, j,1, paint);
                     //canvas.drawPoint(i, j, paint);
@@ -312,7 +400,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                     //   invalidate();
                     //  break;
                 } else if (GDOP[i][j] >= 4.5f) {
-                    bitmap.setPixel(i,j,getResources().getColor(R.color.colorGDOP5,getTheme()));
+                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
                     //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP5));
                     //canvas.drawCircle(i, j,1, paint);
                     //canvas.drawPoint(i, j, paint);
@@ -321,6 +409,12 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                     // break;
                 }
             }
+        // }
+        // }
+
+
+        // }
+
         roomImageView.setGDOPbitmap(bitmap);
            /* int[] colors = new int[300 * 300];
             Arrays.fill(colors, 0, 300 * 100, Color.argb(85, 255, 0, 0));
@@ -343,62 +437,102 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
         boolean Captured = false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                if (roomImageView.PointList.size() != Key) {
-                    Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
-                    roomImageView.PointList.add(new Point(getX, getY));
-                    roomImageView.invalidateImage();
-                } else {
-                    Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
-                }
-                tv.setText(Touch);
-                //Touch = "";
-                if(FlagRoom) {
+                if (FlagRoom) {
                     if (roomImageView.CornerList.size() != Corners) {
+                        Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                         roomImageView.CornerList.add(new Point(getX, getY));
                         roomImageView.invalidateImage();
+                    } else {
+                        Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
+                    }
+                } else {
+                    if (roomImageView.PointList.size() != Key) {
+                        Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
+                        roomImageView.PointList.add(new Point(getX, getY));
+                        roomImageView.invalidateImage();
+                    } else {
+                        Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                     }
                 }
+                tv.setText(Touch);
                 break;
             }
 
             //остался баг с пожиранием маяков
             case MotionEvent.ACTION_MOVE: {
-                for (int i = 0; i < roomImageView.PointList.size(); i++) {
-                    int offsetX = abs(getX - roomImageView.PointList.get(i).x);
-                    int offsetY = abs(getY - roomImageView.PointList.get(i).y);
-                    if (offsetX < 50 && offsetY < 50) {
-                        Captured = true;
-                        boolean Trace = false;
-                        CapturedPointIndex = i;
-                        if (getX < 0) {
-                            roomImageView.PointList.get(i).x = 0;
-                        } else if (getX > roomImageView.getWidth()) {
-                            roomImageView.PointList.get(i).x = roomImageView.getWidth();
-                            roomImageView.PointList.get(i).y = getY;
-                        } else if (getY < 0) {
-                            roomImageView.PointList.get(i).y = 0;
-                        } else if (getY > roomImageView.getHeight()) {
-                            roomImageView.PointList.get(i).y = roomImageView.getHeight();
-                            roomImageView.PointList.get(i).x = getX;
-                        } else {
-                            roomImageView.PointList.get(i).x = getX;
-                            roomImageView.PointList.get(i).y = getY;
-                        }
+                if(FlagRoom == false) {
+                    for (int i = 0; i < roomImageView.PointList.size(); i++) {
+                        int offsetX = abs(getX - roomImageView.PointList.get(i).x);
+                        int offsetY = abs(getY - roomImageView.PointList.get(i).y);
+                        if (offsetX < 50 && offsetY < 50) {
+                            Captured = true;
+                            boolean Trace = false;
+                            CapturedPointIndex = i;
+                            if (getX < 0) {
+                                roomImageView.PointList.get(i).x = 0;
+                            } else if (getX > roomImageView.getWidth()) {
+                                roomImageView.PointList.get(i).x = roomImageView.getWidth();
+                                roomImageView.PointList.get(i).y = getY;
+                            } else if (getY < 0) {
+                                roomImageView.PointList.get(i).y = 0;
+                            } else if (getY > roomImageView.getHeight()) {
+                                roomImageView.PointList.get(i).y = roomImageView.getHeight();
+                                roomImageView.PointList.get(i).x = getX;
+                            } else {
+                                roomImageView.PointList.get(i).x = getX;
+                                roomImageView.PointList.get(i).y = getY;
+                            }
 
+                        }
+                        roomImageView.invalidateImage();
                     }
-                    roomImageView.invalidateImage();
+                } else {
+                    for (int i = 0; i < roomImageView.CornerList.size(); i++) {
+                        int offsetX = abs(getX - roomImageView.CornerList.get(i).x);
+                        int offsetY = abs(getY - roomImageView.CornerList.get(i).y);
+                        if (offsetX < 50 && offsetY < 50) {
+                            Captured = true;
+                            boolean Trace = false;
+                            CapturedPointIndex = i;
+                            if (getX < 0) {
+                                roomImageView.CornerList.get(i).x = 0;
+                            } else if (getX > roomImageView.getWidth()) {
+                                roomImageView.CornerList.get(i).x = roomImageView.getWidth();
+                                roomImageView.CornerList.get(i).y = getY;
+                            } else if (getY < 0) {
+                                roomImageView.CornerList.get(i).y = 0;
+                            } else if (getY > roomImageView.getHeight()) {
+                                roomImageView.CornerList.get(i).y = roomImageView.getHeight();
+                                roomImageView.CornerList.get(i).x = getX;
+                            } else {
+                                roomImageView.CornerList.get(i).x = getX;
+                                roomImageView.CornerList.get(i).y = getY;
+                            }
+
+                        }
+                        roomImageView.invalidateImage();
+                    }
                 }
                 MoveTouch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                 tv.setText(MoveTouch);
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                if (Captured) {
-                    roomImageView.PointList.get(CapturedPointIndex).x = getX;
-                    roomImageView.PointList.get(CapturedPointIndex).y = getY;
-                    roomImageView.invalidateImage();
+                if (FlagRoom == false) {
+                    if (Captured) {
+                        roomImageView.PointList.get(CapturedPointIndex).x = getX;
+                        roomImageView.PointList.get(CapturedPointIndex).y = getY;
+                        roomImageView.invalidateImage();
+                    }
+                    break;
+                } else {
+                    if (Captured) {
+                        roomImageView.CornerList.get(CapturedPointIndex).x = getX;
+                        roomImageView.CornerList.get(CapturedPointIndex).y = getY;
+                        roomImageView.invalidateImage();
+                    }
+                    break;
                 }
-                break;
             }
         }
         return true;
@@ -483,6 +617,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
         Bitmap bitmapAlpha;
         double[][] GDOP;
         boolean redrawGDOP;
+        //ReturnCorner Corner = new ReturnCorner();
 
         public void setGDOPbitmap(Bitmap GDOPbitmap) {
             this.GDOPbitmap = GDOPbitmap;
@@ -512,20 +647,30 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
             super.draw(canvas);
             Log.d("Render started", String.valueOf(SystemClock.elapsedRealtimeNanos()));
             Paint paint = new Paint();
-
-           /* Paint paintBLUE = new Paint();
-            paintBLUE.setColor(Color.rgb(0,0,255));
-            paintBLUE.setStrokeWidth(1f);
-
-            Paint paintYELLOW = new Paint();
-            paintYELLOW.setColor(Color.YELLOW);
-            paintYELLOW.setStrokeWidth(1f);
-
-            Paint paintRED = new Paint();
-            paintRED.setColor(Color.RED);
-            paintRED.setStrokeWidth(1f);*/
-
             paint.setStrokeWidth(1f);
+            boolean indintersection = false;
+
+            for (int k = 0; k < Corners-1; k++) {
+                double ax1 = getWidth();
+                double ay1 = getHeight();
+                double ax2 = PointList.get(k).x;
+                double ay2 = PointList.get(k).y;
+
+                double bx1 = CornerList.get(k).x;
+                double by1 = CornerList.get(k).y;
+                double bx2 = CornerList.get(k + 1).x;
+                double by2 = CornerList.get(k + 1).y;
+
+
+                double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
+                double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
+                double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
+                double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
+                if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                    indintersection = true;
+                }
+            }
+
 
             for (int i = 0; i < GDOP.length; i++)
                 for (int j = 0; j < GDOP[0].length; j++) {
@@ -534,68 +679,68 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP1));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
-                      //  invalidate();
-                      //  break;
+                        //  invalidate();
+                        //  break;
                     } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintYELLOW);
-                      //  invalidate();
-                      //  break;
+                        //  invalidate();
+                        //  break;
                     } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP2));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintYELLOW);
-                     //   invalidate();
-                      //  break;
+                        //   invalidate();
+                        //  break;
                     } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
                         //canvas.drawPoint(i, j, paint);
                         canvas.drawPoint(i, j, paint);
-                      //  invalidate();
-                     //   break;
+                        //  invalidate();
+                        //   break;
                     } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP3));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
-                      //  invalidate();
-                      //  break;
+                        //  invalidate();
+                        //  break;
                     } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP35));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
-                     //   invalidate();
-                       // break;
+                        //   invalidate();
+                        // break;
                     } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP4));
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
-                     //   invalidate();
-                       // break;
+                        //   invalidate();
+                        // break;
                     } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP45));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
-                     //   invalidate();
-                      //  break;
+                        //   invalidate();
+                        //  break;
                     }else if (GDOP[i][j] >= 4.5f) {
                         paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP5));
                         //canvas.drawCircle(i, j,1, paint);
                         canvas.drawPoint(i, j, paint);
                         //canvas.drawPoint(i, j, paintRED);
-                    //    invalidate();
-                       // break;
+                        //    invalidate();
+                        // break;
                     }
 
                     //  paint.setStrokeWidth(1f);
                 }
-           //
-           // redrawGDOP = false;
+            //
+            // redrawGDOP = false;
             invalidate();
             Log.d("Render finished", String.valueOf(SystemClock.elapsedRealtimeNanos()));
         }
@@ -616,12 +761,13 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
         @Override
         public void draw(Canvas canvas) {
             super.draw(canvas);
+
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(30f);
 
             if (GDOP != null) {
-               // DrawGDOP(canvas);
+                // DrawGDOP(canvas);
                 DrawBitMap(canvas);
             }
             //  DrawBitMap(canvas);
@@ -640,7 +786,39 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
             }
+                /*if(PointList.size() == Key)
+                {
+                    paint.setColor(Color.RED);
+                    canvas.drawPoint(PointList.get(Key).x, PointList.get(Key).y, paint);
+                    invalidate();
+                }*/
+
+
+
+            //углы
+            Paint Corner = new Paint();
+            Corner.setColor(Color.BLACK);
+            Corner.setStrokeWidth(50f);
+            for (Point p : CornerList) {
+                canvas.drawPoint(p.x, p.y, Corner);
+                invalidate();
+            }
+            //стены
             Paint RoomLine = new Paint();
+            RoomLine.setColor(Color.BLACK);
+            RoomLine.setStrokeWidth(40f);
+            if (CornerList.size() > 1) {
+                int flag = 0;
+                for (int i = 0; i < CornerList.size() - 1; i++) {
+                    canvas.drawLine(CornerList.get(i).x, CornerList.get(i).y, CornerList.get(i + 1).x, CornerList.get(i + 1).y, RoomLine);
+                    flag = i;
+                }
+                if(CornerList.size() == Corners) {
+                    canvas.drawLine(CornerList.get(flag + 1).x, CornerList.get(flag + 1).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
+                }
+            }
+
+            /*Paint RoomLine = new Paint();
             RoomLine.setColor(Color.BLACK);
             RoomLine.setStrokeWidth(40f);
             Paint Corner = new Paint();
@@ -659,7 +837,7 @@ private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
                 }
                 canvas.drawLine(CornerList.get(flag).x, CornerList.get(flag).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
             }
-           }
+           }*/
 
         }
     }

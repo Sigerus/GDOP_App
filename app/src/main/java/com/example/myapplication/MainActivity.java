@@ -63,6 +63,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
+
+
     ///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
@@ -89,51 +91,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go = findViewById(R.id.button3);
         Room = findViewById(R.id.button5);
         KO = findViewById(R.id.button4);
-
-
-        //tv.setOnTouchListener(this);
-        //setContentView(tv);
+        
         roomImageView = (RoomImageView) findViewById(R.id.imageView);
         roomImageView.setOnTouchListener(this);
 
 
-
-// плохой код. только для демонстрации
-        // imageView.setImageDrawable(new DrawView(this));
-        //drawingImageView = (ImageView) findViewById(R.id.imageView);
-        // gdopImageView = (GDOPImageView) findViewById(R.id.imageView2);
-        /*
-        //////////////////////////   Сетка
-        drawingImageView = (ImageView) findViewById(R.id.imageView);
-        //Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        //Function(size);
-        pointImageWidth = size.x;
-        pointImageHeight = size.y;
-        Bitmap bitmap = Bitmap.createBitmap((int) pointImageWidth, pointImageHeight , Bitmap.Config.ARGB_8888);
-//        Bitmap bitmap = Bitmap.createBitmap(drawingImageView.getWidth(), drawingImageView.getHeight(),Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawingImageView.setImageBitmap(bitmap);
-
-        Paint paint = new Paint();
-        paint.setColor(Color.DKGRAY);
-        paint.setStrokeWidth(3);
-
-//        Display display = getWindowManager().getDefaultDisplay();
-//        Point size = new Point();
-//        display.getSize(size);
-//        pointImageWidth = size.x;
-//        pointImageHeight = size.y;
-
-
-
-        for (int i = 0; i <= pointImageHeight; i += ScreenStep) // Вертикальные линии
-            canvas.drawLine(0, i, pointImageWidth, i, paint);
-        for (int i = 0; i <= pointImageWidth; i += ScreenStep) // Горизонтальные линии
-            canvas.drawLine(i, 0, i, pointImageHeight, paint);
-*/
-
-        ////////////////////////////////
         Switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -220,27 +182,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
             }
         });
+
+
     }
 
-    public class ReturnCorner
+
+    public Point Function(Point size)
     {
-        public int Return()
-        {
-            return Corners;
-        }
-    }
-
-    private class Room extends androidx.appcompat.widget.AppCompatImageView
-    {
-
-        public Room(Context context, AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-        }
-        public void CreateBitMap(int a) {
-
-            //Bitmap bitmap1 = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
-        }
-
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getSize(size);
+        return size;
     }
 
 
@@ -322,9 +273,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         */
         for (int i = 0; i < GDOP.length; i++)
             for (int j = 0; j < GDOP[0].length; j++) {
-                // Paint paint = new Paint();
-                /*for (int k = 0; k < roomImageView.PointList.size(); k++) {
-                    double ax1 = i;
+                for (int k = 0; k < roomImageView.PointList.size(); k++) {
+                    /*double ax1 = i;
                     double ay1 = j;
                     double ax2 = roomImageView.PointList.get(k).x;
                     double ay2 = roomImageView.PointList.get(k).y;
@@ -340,92 +290,37 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         if ((v1 * v2 < 0) && (v3 * v4 < 0)) {*/
                 if (GDOP[i][j] <= 1) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP1));
-                    //canvas.drawCircle(i, j,1, paint);
-                    //canvas.drawPoint(i, j, paint);
-                    //  invalidate();
-                    //  break;
+
                 } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP15));
-                    //canvas.drawCircle(i, j,1, paint);
-                    //canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintYELLOW);
-                    //  invalidate();
-                    //  break;
+
                 } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP2));
-                    //canvas.drawCircle(i, j,1, paint);
-                    //canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintYELLOW);
-                    //   invalidate();
-                    //  break;
+
                 } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
-                    // paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP25));
-                    //canvas.drawPoint(i, j, paint);
-                    // canvas.drawPoint(i, j, paint);
-                    //  invalidate();
-                    //   break;
+
                 } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
-                    // paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP3));
-                    //canvas.drawCircle(i, j,1, paint);
-                    // canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintRED);
-                    //  invalidate();
-                    //  break;
+
                 } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP35));
-                    //canvas.drawCircle(i, j,1, paint);
-                    //canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintRED);
-                    //   invalidate();
-                    // break;
+
                 } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP4));
-                    //canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintRED);
-                    //   invalidate();
-                    // break;
+
                 } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP45));
-                    //canvas.drawCircle(i, j,1, paint);
-                    //canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintRED);
-                    //   invalidate();
-                    //  break;
+
                 } else if (GDOP[i][j] >= 4.5f) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
-                    //paint.setColor(ContextCompat.getColor(getContext(), R.color.colorGDOP5));
-                    //canvas.drawCircle(i, j,1, paint);
-                    //canvas.drawPoint(i, j, paint);
-                    //canvas.drawPoint(i, j, paintRED);
-                    //    invalidate();
-                    // break;
+
                 }
-            }
+            //}
         // }
-        // }
-
-
-        // }
-
+         }
+         }
         roomImageView.setGDOPbitmap(bitmap);
-           /* int[] colors = new int[300 * 300];
-            Arrays.fill(colors, 0, 300 * 100, Color.argb(85, 255, 0, 0));
-            Arrays.fill(colors, 300 * 100, 300 * 200, Color.GREEN);
-            Arrays.fill(colors, 300 * 200, 300 * 300, Color.BLUE);
-
-            bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
-            bitmapAlpha = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.ARGB_8888);
-            canvas.drawBitmap(bitmap, 50, 50, paint);
-            canvas.drawBitmap(bitmapAlpha, 550, 50, paint);
-            invalidate();*/
     }
 
     @Override
@@ -815,6 +710,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 }
                 if(CornerList.size() == Corners) {
                     canvas.drawLine(CornerList.get(flag + 1).x, CornerList.get(flag + 1).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
+                    CornerList.add(CornerList.get(0));
                 }
             }
 

@@ -202,10 +202,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                         arg0.setClickable(false);
 
 
-
-                                        if(Corners > 2) {
-                                            FlagRoom = true;
-                                        }
                                     }
                                 })
                         .setNegativeButton("Отмена",
@@ -519,7 +515,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             super.draw(canvas);
             Log.d("Render started", String.valueOf(SystemClock.elapsedRealtimeNanos()));
             Paint paint = new Paint();
-            
+
 
             paint.setStrokeWidth(1f);
 

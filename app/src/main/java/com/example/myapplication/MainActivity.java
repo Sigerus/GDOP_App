@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go = findViewById(R.id.button3);
         Room = findViewById(R.id.button5);
         KO = findViewById(R.id.button4);
-        
+
         roomImageView = (RoomImageView) findViewById(R.id.imageView);
         roomImageView.setOnTouchListener(this);
 
@@ -112,6 +112,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
         });
 
+
+
+
         Room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -119,7 +122,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 View roomdialogView = li.inflate(R.layout.roomdialog, null);
                 AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
                 mDialogBuilder.setView(roomdialogView);
-                final EditText userInput = (EditText) roomdialogView.findViewById(R.id.input_text);
+                final EditText userInput =  roomdialogView.findViewById(R.id.input_text);
                 mDialogBuilder
                         .setCancelable(false)
                         .setPositiveButton("OK",
@@ -187,13 +190,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     }
 
 
-    public Point Function(Point size)
-    {
-        Display display = getWindowManager().getDefaultDisplay();
-        display.getSize(size);
-        return size;
-    }
-
 
     private class CalcGDOP extends AsyncTask<String, Void,double[][]> {
         /** The system calls this to perform work in a worker thread and
@@ -218,108 +214,180 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
     }
     public void CreateBitMap(double[][] GDOP) {
-
-        // Canvas canvas = new Canvas();
-        //int[] colors = new int[roomImageView.getWidth() * roomImageView.getHeight()];
-        //Bitmap bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
         Bitmap bitmap = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
-        //Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        boolean indintersection = false;
 
-        /*for (int k = 0; k < roomImageView.CornerList.size() - 1; k++) {
-            double ax1 = roomImageView.getWidth();
-            double ay1 = roomImageView.getHeight();
+
+        //идеальный вариант 1 чёрный экран
+        /*for(int k = 0; k < roomImageView.CornerList.size() - 1; k++)
+        {
+            double ax1 = i;
+            double ay1 = j;
             double ax2 = roomImageView.PointList.get(k).x;
             double ay2 = roomImageView.PointList.get(k).y;
+
+            double bx1 = roomImageView.CornerList.get(k).x;
+            double by1 = roomImageView.CornerList.get(k).y;
+            double bx2 = roomImageView.CornerList.get(k).x;
+            double by2 = roomImageView.CornerList.get(k).y;
+
+            double v1 = (bx2 - bx1) * (ay1 - by1) * (by2 - by1) * (ax1 - bx1);
+            double v2 = (bx2 - bx1) * (ay2 - by1) * (by2 - by1) * (ax2 - bx1);
+            double v3 = (ax2 - ax1) * (by1 - ay1) * (ay2 - ay1) * (bx1 - ax1);
+            double v4 = (ax2 - ax1) * (by2 - ay1) * (ay2 - ay1) * (bx2 - ax1);
+
+            if (((v1 * v2) < 0) && ((v3 * v4) < 0))
+            {
+
+            }
+
+        }*/
+
+        // вариант 1 с поправками
+        /*for(int k = 0; k < roomImageView.CornerList.size() - 1; k++) {
+            double ax1 = i;
+            double ay1 = j;
+            double ax2 = roomImageView.PointList.get(roomImageView.PointList.size() - 1).x;
+            double ay2 = roomImageView.PointList.get(roomImageView.PointList.size() - 1).y;
 
             double bx1 = roomImageView.CornerList.get(k).x;
             double by1 = roomImageView.CornerList.get(k).y;
             double bx2 = roomImageView.CornerList.get(k + 1).x;
             double by2 = roomImageView.CornerList.get(k + 1).y;
 
+            double v1 = (bx2 - bx1) * (ay1 - by1) * (by2 - by1) * (ax1 - bx1);
+            double v2 = (bx2 - bx1) * (ay2 - by1) * (by2 - by1) * (ax2 - bx1);
+            double v3 = (ax2 - ax1) * (by1 - ay1) * (ay2 - ay1) * (bx1 - ax1);
+            double v4 = (ax2 - ax1) * (by2 - ay1) * (ay2 - ay1) * (bx2 - ax1);
 
-            double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
-            double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
-            double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
-            double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-            if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
-                indintersection = true;
-            }
-        }*/
+            if (((v1 * v2) < 0) && ((v3 * v4) < 0)) { }*/
 
-        /*
-        for (int k = 0; k < roomImageView.PointList.size(); k++)
+        // вариант 2
+        /*for (int k = 0; k < roomImageView.PointList.size(); k++)
         {
-            double ax1 = roomImageView.getWidth();
-            double ay1 = roomImageView.getHeight();
+            double ax1 = i;
+            double ay1 = j;
+            //double ax2 = SatPos[0, i];
             double ax2 = roomImageView.PointList.get(k).x;
+            //double ay2 = SatPos[1, i];
             double ay2 = roomImageView.PointList.get(k).y;
-            indintersection = false;
-            for (int m = 0; m < roomImageView.CornerList.size()-1; m++) {
+            //indintersection = false;
+            for (int m = 0; m < roomImageView.CornerList.size()-1; m++)
+            {
+                //double bx1 = BoxClone[0, j];
                 double bx1 = roomImageView.CornerList.get(m).x;
+                //double by1 = BoxClone[1, j];
                 double by1 = roomImageView.CornerList.get(m).y;
+                //double bx2 = BoxClone[0, j + 1];
                 double bx2 = roomImageView.CornerList.get(m + 1).x;
+                //double by2 = BoxClone[1, j + 1];
                 double by2 = roomImageView.CornerList.get(m + 1).y;
                 double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
                 double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
                 double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
                 double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
-                    indintersection = true;
-                }
+                if ((v1 * v2 < 0) && (v3 * v4 < 0))
+                {
 
+                }
             }
-        }
-        */
-        for (int i = 0; i < GDOP.length; i++)
-            for (int j = 0; j < GDOP[0].length; j++) {
-                for (int k = 0; k < roomImageView.PointList.size(); k++) {
-                    /*double ax1 = i;
-                    double ay1 = j;
-                    double ax2 = roomImageView.PointList.get(k).x;
-                    double ay2 = roomImageView.PointList.get(k).y;
-                    for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
-                        double bx1 = roomImageView.CornerList.get(m).x;
-                        double by1 = roomImageView.CornerList.get(m).y;
-                        double bx2 = roomImageView.CornerList.get(m + 1).x;
-                        double by2 = roomImageView.CornerList.get(m + 1).y;
-                        double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
-                        double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
-                        double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
-                        double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                        if ((v1 * v2 < 0) && (v3 * v4 < 0)) {*/
-                if (GDOP[i][j] <= 1) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
 
-                } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
+        }*/
 
-                } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
+        if(roomImageView.CornerList.size() > 0) {
+            for (int i = 0; i < GDOP.length; i++)
+                for (int j = 0; j < GDOP[0].length; j++) {
+                    for (int k = 0; k < roomImageView.PointList.size(); k++) {
+                        double ax1 = i;
+                        double ay1 = j;
+                        //double ax2 = SatPos[0, i];
+                        double ax2 = roomImageView.PointList.get(k).x;
+                        //double ay2 = SatPos[1, i];
+                        double ay2 = roomImageView.PointList.get(k).y;
+                        //indintersection = false;
+                        for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
+                            //double bx1 = BoxClone[0, j];
+                            double bx1 = roomImageView.CornerList.get(m).x;
+                            //double by1 = BoxClone[1, j];
+                            double by1 = roomImageView.CornerList.get(m).y;
+                            //double bx2 = BoxClone[0, j + 1];
+                            double bx2 = roomImageView.CornerList.get(m + 1).x;
+                            //double by2 = BoxClone[1, j + 1];
+                            double by2 = roomImageView.CornerList.get(m + 1).y;
+                            double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
+                            double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
+                            double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
+                            double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
+                            if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                                if (GDOP[i][j] <= 1) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
 
-                } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
+                                } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
 
-                } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
+                                } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
 
-                } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
+                                } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
 
-                } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
+                                } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
 
-                } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
+                                } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
 
-                } else if (GDOP[i][j] >= 4.5f) {
-                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
+                                } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
+
+                                } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
+
+                                } else if (GDOP[i][j] >= 4.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
+
+                                }
+                            } else {
+                                bitmap.setPixel(i, j, getResources().getColor(R.color.checkCl, getTheme()));
+                            }
+                        }
+                    }
 
                 }
-            //}
-        // }
-         }
-         }
+        } else {
+            for (int i = 0; i < GDOP.length; i++)
+                for (int j = 0; j < GDOP[0].length; j++) {
+                                if (GDOP[i][j] <= 1) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
+
+                                } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
+
+                                } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
+
+                                } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
+
+                                } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
+
+                                } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
+
+                                } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
+
+                                } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
+
+                                } else if (GDOP[i][j] >= 4.5f) {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
+
+                                }
+
+
+                }
+        }
         roomImageView.setGDOPbitmap(bitmap);
     }
 
@@ -355,14 +423,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
             //остался баг с пожиранием маяков
             case MotionEvent.ACTION_MOVE: {
-                if(FlagRoom == false) {
+                if(!FlagRoom) {
                     for (int i = 0; i < roomImageView.PointList.size(); i++) {
                         int offsetX = abs(getX - roomImageView.PointList.get(i).x);
                         int offsetY = abs(getY - roomImageView.PointList.get(i).y);
                         if (offsetX < 50 && offsetY < 50) {
-                            Captured = true;
-                            boolean Trace = false;
-                            CapturedPointIndex = i;
                             if (getX < 0) {
                                 roomImageView.PointList.get(i).x = 0;
                             } else if (getX > roomImageView.getWidth()) {
@@ -377,6 +442,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 roomImageView.PointList.get(i).x = getX;
                                 roomImageView.PointList.get(i).y = getY;
                             }
+                            /*for (int j = 0; j < roomImageView.PointList.size(); j++) {
+                                if ((roomImageView.PointList.get(i).x == roomImageView.PointList.get(j).x) && (roomImageView.PointList.get(i).y == roomImageView.PointList.get(j).y)) {
+                                    
+                                }
+                            }*/
 
                         }
                         roomImageView.invalidateImage();
@@ -386,9 +456,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         int offsetX = abs(getX - roomImageView.CornerList.get(i).x);
                         int offsetY = abs(getY - roomImageView.CornerList.get(i).y);
                         if (offsetX < 50 && offsetY < 50) {
-                            Captured = true;
-                            boolean Trace = false;
-                            CapturedPointIndex = i;
                             if (getX < 0) {
                                 roomImageView.CornerList.get(i).x = 0;
                             } else if (getX > roomImageView.getWidth()) {
@@ -413,7 +480,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                if (FlagRoom == false) {
+                if (!FlagRoom) {
                     if (Captured) {
                         roomImageView.PointList.get(CapturedPointIndex).x = getX;
                         roomImageView.PointList.get(CapturedPointIndex).y = getY;
@@ -709,7 +776,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     flag = i;
                 }
                 if(CornerList.size() == Corners) {
-                    canvas.drawLine(CornerList.get(flag + 1).x, CornerList.get(flag + 1).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
+                 //   canvas.drawLine(CornerList.get(flag + 1).x, CornerList.get(flag + 1).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
                     CornerList.add(CornerList.get(0));
                 }
             }
@@ -736,6 +803,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
            }*/
 
         }
+
     }
 
 

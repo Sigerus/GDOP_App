@@ -68,8 +68,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int ScreenStep = 100;
     private int gridValueX = 0;
     private int gridValueY = 0;
-    private int gridcountX=10;
-    private int gridcountY=19;
+    private int gridcountX=8;
+    private int gridcountY=18;
     ///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
@@ -172,13 +172,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                         canvas.drawLine(0,1800,pointImageWidth,1800,paint1 );//ох
                                         canvas.drawLine(100,0,100,pointImageHeight,paint1 );//оу
 
-                                        for (int i = 0; i <= pointImageHeight-100; i += ScreenStep) { // Горизонтальные линии
-                                            //canvas.drawText(String.valueOf(gridcountY*gridValueY-(gridValueY+gridValueY*i/ScreenStep)), 5, i + 10, shadowPaint);
-                                            canvas.drawText(String.valueOf(pointImageHeight - 50), 5, i + 10, shadowPaint);
+                                        for (int i = 0; i <= pointImageHeight-200; i += ScreenStep) { // Горизонтальные линии
+                                            canvas.drawText(String.valueOf(gridValueY-gridValueY/gridcountY*i/ScreenStep), 5, i +110, shadowPaint);
+                                            //canvas.drawText(String.valueOf(pointImageHeight - 50), 5, i + 10, shadowPaint);
                                         }
 
-                                        for (int i = 0; i <= pointImageHeight; i += ScreenStep) { // Вертикальные линии
-                                            canvas.drawText(String.valueOf(pointImageWidth - 100),i+170,1850,shadowPaint);
+                                        for (int i = 0; i <= pointImageWidth-200; i += ScreenStep) { // Вертикальные линии
+                                           canvas.drawText(String.valueOf(gridValueX-gridValueX/gridcountX*i/ScreenStep),870-i,1850,shadowPaint);
+                                            //canvas.drawText(String.valueOf(pointImageWidth - 100),i+170,1850,shadowPaint);
                                         }
 
                                         for (int i = 0; i <= pointImageHeight; i += ScreenStep) { // Вертикальные линии

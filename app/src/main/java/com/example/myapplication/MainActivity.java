@@ -317,7 +317,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                             double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
                             double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
                             double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                            if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                            if (!(v1 * v2 < 0) && !(v3 * v4 < 0)) {
                                 if (GDOP[i][j] <= 1) {
                                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
 
@@ -354,6 +354,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                 }
         } else {
+
             for (int i = 0; i < GDOP.length; i++)
                 for (int j = 0; j < GDOP[0].length; j++) {
                                 if (GDOP[i][j] <= 1) {

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
+import android.widget.Button;
 
 public class MainMenu extends AppCompatActivity {
 
@@ -20,7 +21,7 @@ public class MainMenu extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        Button fab = findViewById(R.id.button10);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -30,5 +31,18 @@ public class MainMenu extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button Settings = findViewById(R.id.button12);
+        Settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                Intent intent=new Intent(MainMenu.this, Settings.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 }

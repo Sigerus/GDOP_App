@@ -290,34 +290,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                 }
             }
-
         }*/
 
         if(roomImageView.CornerList.size() > 0) {
             for (int i = 0; i < GDOP.length; i++)
                 for (int j = 0; j < GDOP[0].length; j++) {
-                    for (int k = 0; k < roomImageView.PointList.size(); k++) {
-                        double ax1 = i;
-                        double ay1 = j;
-                        //double ax2 = SatPos[0, i];
-                        double ax2 = roomImageView.PointList.get(k).x;
-                        //double ay2 = SatPos[1, i];
-                        double ay2 = roomImageView.PointList.get(k).y;
-                        //indintersection = false;
-                        for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
-                            //double bx1 = BoxClone[0, j];
-                            double bx1 = roomImageView.CornerList.get(m).x;
-                            //double by1 = BoxClone[1, j];
-                            double by1 = roomImageView.CornerList.get(m).y;
-                            //double bx2 = BoxClone[0, j + 1];
-                            double bx2 = roomImageView.CornerList.get(m + 1).x;
-                            //double by2 = BoxClone[1, j + 1];
-                            double by2 = roomImageView.CornerList.get(m + 1).y;
-                            double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
-                            double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
-                            double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
-                            double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                            if (!(v1 * v2 < 0) && !(v3 * v4 < 0)) {
                                 if (GDOP[i][j] <= 1) {
                                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
 
@@ -345,13 +322,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 } else if (GDOP[i][j] >= 4.5f) {
                                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
 
-                                }
-                            } else {
+                                } else {
                                 bitmap.setPixel(i, j, getResources().getColor(R.color.checkCl, getTheme()));
                             }
-                        }
-                    }
-
                 }
         } else {
 
@@ -385,8 +358,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
 
                                 }
-
-
                 }
         }
         roomImageView.setGDOPbitmap(bitmap);
@@ -574,6 +545,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     public static class RoomImageView extends androidx.appcompat.widget.AppCompatImageView {
         public ArrayList<Point> PointList = new ArrayList<Point>();
+        public ArrayList<Point> TruePointList = new ArrayList<Point>();
         public ArrayList<Point> CornerList = new ArrayList<Point>();
         private Point point;
         Bitmap GDOPbitmap;

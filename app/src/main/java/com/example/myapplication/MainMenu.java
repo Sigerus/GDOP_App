@@ -44,5 +44,28 @@ public class MainMenu extends AppCompatActivity {
         });
 
 
+        Button Settings2 = findViewById(R.id.button6);
+        Settings2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                Intent intent=new Intent(MainMenu.this, Settings2.class);
+                startActivity(intent);
+            }
+        });
+
+
+        Button Help= findViewById(R.id.button8);
+        Help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                Intent intent=new Intent(MainMenu.this, help.class);
+                startActivity(intent);
+            }
+        });
+
     }
 }

@@ -71,7 +71,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     public static int Key = 0;
     public static int Corners = 0;
     private ImageView drawingImageView;
-    public static boolean Flag = true;
+    public static boolean FlagMethod = true;
+    public boolean indintersection = true;
 //    private CoordMap coordMap;
 
 
@@ -100,9 +101,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Flag = false;
+                    FlagMethod = false;
                 } else {
-                    Flag = true;
+                    FlagMethod = true;
                 } }});
 
         KO.setOnClickListener(new View.OnClickListener() {
@@ -196,15 +197,57 @@ public class MainActivity extends Activity implements View.OnTouchListener {
          * delivers it the parameters given to AsyncTask.execute() */
         protected double[][] doInBackground(String... method) {
 //        if(Arrays.toString(method).equals("ToF")) {
-            if(Flag) {
-                ToF_Method ToF_method = new ToF_Method();
-                Flag = true;
-                return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+            if(FlagRoom) {
+                for (int i = 0; i < roomImageView.getHeight(); i++)
+                    for (int j = 0; j < roomImageView.getWidth(); j++) {
+                        for (int k = 0; k < roomImageView.PointList.size(); k++) {
+                            double ax1 = i;
+                            double ay1 = j;
+                            //double ax2 = SatPos[0, i];
+                            double ax2 = roomImageView.PointList.get(k).x;
+                            //double ay2 = SatPos[1, i];
+                            double ay2 = roomImageView.PointList.get(k).y;
+                            //indintersection = false;
+                            for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
+                                //double bx1 = BoxClone[0, j];
+                                double bx1 = roomImageView.CornerList.get(m).x;
+                                //double by1 = BoxClone[1, j];
+                                double by1 = roomImageView.CornerList.get(m).y;
+                                //double bx2 = BoxClone[0, j + 1];
+                                double bx2 = roomImageView.CornerList.get(m + 1).x;
+                                //double by2 = BoxClone[1, j + 1];
+                                double by2 = roomImageView.CornerList.get(m + 1).y;
+                                double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
+                                double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
+                                double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
+                                double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
+                                if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                                    roomImageView.TruePointList.add(roomImageView.PointList.get(k));
+                                }
+                            }
+                        }
+                    }
+                if (FlagMethod) {
+                    ToF_Method ToF_method = new ToF_Method();
+                    FlagMethod = true;
+                    return ToF_method.main(roomImageView.TruePointList, roomImageView.getWidth(), roomImageView.getHeight());
+                } else {
+                    TDoA_Method TDoA_method = new TDoA_Method();
+                    return TDoA_method.main(roomImageView.TruePointList, roomImageView.getWidth(), roomImageView.getHeight());
+                }
             } else {
-                TDoA_Method TDoA_method = new TDoA_Method();
-                return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                if (FlagMethod) {
+                    ToF_Method ToF_method = new ToF_Method();
+                    FlagMethod = true;
+                    return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                } else {
+                    TDoA_Method TDoA_method = new TDoA_Method();
+                    return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
+                }
             }
         }
+
+
 
         /** The system calls this to perform work in the UI thread and delivers
          * the result from doInBackground() */
@@ -216,83 +259,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     public void CreateBitMap(double[][] GDOP) {
         Bitmap bitmap = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
 
-
-        //идеальный вариант 1 чёрный экран
-        /*for(int k = 0; k < roomImageView.CornerList.size() - 1; k++)
-        {
-            double ax1 = i;
-            double ay1 = j;
-            double ax2 = roomImageView.PointList.get(k).x;
-            double ay2 = roomImageView.PointList.get(k).y;
-
-            double bx1 = roomImageView.CornerList.get(k).x;
-            double by1 = roomImageView.CornerList.get(k).y;
-            double bx2 = roomImageView.CornerList.get(k).x;
-            double by2 = roomImageView.CornerList.get(k).y;
-
-            double v1 = (bx2 - bx1) * (ay1 - by1) * (by2 - by1) * (ax1 - bx1);
-            double v2 = (bx2 - bx1) * (ay2 - by1) * (by2 - by1) * (ax2 - bx1);
-            double v3 = (ax2 - ax1) * (by1 - ay1) * (ay2 - ay1) * (bx1 - ax1);
-            double v4 = (ax2 - ax1) * (by2 - ay1) * (ay2 - ay1) * (bx2 - ax1);
-
-            if (((v1 * v2) < 0) && ((v3 * v4) < 0))
-            {
-
-            }
-
-        }*/
-
-        // вариант 1 с поправками
-        /*for(int k = 0; k < roomImageView.CornerList.size() - 1; k++) {
-            double ax1 = i;
-            double ay1 = j;
-            double ax2 = roomImageView.PointList.get(roomImageView.PointList.size() - 1).x;
-            double ay2 = roomImageView.PointList.get(roomImageView.PointList.size() - 1).y;
-
-            double bx1 = roomImageView.CornerList.get(k).x;
-            double by1 = roomImageView.CornerList.get(k).y;
-            double bx2 = roomImageView.CornerList.get(k + 1).x;
-            double by2 = roomImageView.CornerList.get(k + 1).y;
-
-            double v1 = (bx2 - bx1) * (ay1 - by1) * (by2 - by1) * (ax1 - bx1);
-            double v2 = (bx2 - bx1) * (ay2 - by1) * (by2 - by1) * (ax2 - bx1);
-            double v3 = (ax2 - ax1) * (by1 - ay1) * (ay2 - ay1) * (bx1 - ax1);
-            double v4 = (ax2 - ax1) * (by2 - ay1) * (ay2 - ay1) * (bx2 - ax1);
-
-            if (((v1 * v2) < 0) && ((v3 * v4) < 0)) { }*/
-
-        // вариант 2
-        /*for (int k = 0; k < roomImageView.PointList.size(); k++)
-        {
-            double ax1 = i;
-            double ay1 = j;
-            //double ax2 = SatPos[0, i];
-            double ax2 = roomImageView.PointList.get(k).x;
-            //double ay2 = SatPos[1, i];
-            double ay2 = roomImageView.PointList.get(k).y;
-            //indintersection = false;
-            for (int m = 0; m < roomImageView.CornerList.size()-1; m++)
-            {
-                //double bx1 = BoxClone[0, j];
-                double bx1 = roomImageView.CornerList.get(m).x;
-                //double by1 = BoxClone[1, j];
-                double by1 = roomImageView.CornerList.get(m).y;
-                //double bx2 = BoxClone[0, j + 1];
-                double bx2 = roomImageView.CornerList.get(m + 1).x;
-                //double by2 = BoxClone[1, j + 1];
-                double by2 = roomImageView.CornerList.get(m + 1).y;
-                double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
-                double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
-                double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
-                double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                if ((v1 * v2 < 0) && (v3 * v4 < 0))
-                {
-
-                }
-            }
-        }*/
-
-        if(roomImageView.CornerList.size() > 0) {
             for (int i = 0; i < GDOP.length; i++)
                 for (int j = 0; j < GDOP[0].length; j++) {
                                 if (GDOP[i][j] <= 1) {
@@ -326,40 +292,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 bitmap.setPixel(i, j, getResources().getColor(R.color.checkCl, getTheme()));
                             }
                 }
-        } else {
 
-            for (int i = 0; i < GDOP.length; i++)
-                for (int j = 0; j < GDOP[0].length; j++) {
-                                if (GDOP[i][j] <= 1) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
-
-                                } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
-
-                                } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
-
-                                } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
-
-                                } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
-
-                                } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
-
-                                } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
-
-                                } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
-
-                                } else if (GDOP[i][j] >= 4.5f) {
-                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
-
-                                }
-                }
-        }
         roomImageView.setGDOPbitmap(bitmap);
     }
 

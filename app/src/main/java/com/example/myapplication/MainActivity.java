@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -31,8 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
-
-import com.example.myapplication.R;
 
 import java.util.ArrayList;
 
@@ -96,7 +93,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Switch = findViewById(R.id.switch2);
         Plus = findViewById(R.id.button2);
         Go = findViewById(R.id.button3);
-        Room = findViewById(R.id.button5);
+        Room = findViewById(R.id.room);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
 

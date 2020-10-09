@@ -39,9 +39,6 @@ private MainActivity Main;
                 k = 0;
                 Matrix A = new Matrix(H);
                 Gdop[x][y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
-
-                //Gdop[x][y] = java.lang.Math.sqrt(Trace(invert(Multi(H, FunT(H)))));
-
             }
 
         }

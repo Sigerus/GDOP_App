@@ -74,6 +74,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     public static boolean FlagMethod = true;
     public boolean indintersection = true;
 //    private CoordMap coordMap;
+    public int flagx = 0;
+    public int flagy = 0;
 
 
     @Override
@@ -226,6 +228,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 }
                             }
                         }
+                        roomImageView.TruePointList.clear();
                     }
                 if (FlagMethod) {
                     ToF_Method ToF_method = new ToF_Method();
@@ -292,6 +295,37 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 bitmap.setPixel(i, j, getResources().getColor(R.color.checkCl, getTheme()));
                             }
                 }
+        /*
+        if (GDOP[i][j] <= 1) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
+
+        } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP15, getTheme()));
+
+        } else if (GDOP[i][j] >= 1.2f && GDOP[i][j] < 2f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP2, getTheme()));
+
+        } else if (GDOP[i][j] >= 2f && GDOP[i][j] < 2.5f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP25, getTheme()));
+
+        } else if (GDOP[i][j] >= 2.5f && GDOP[i][j] < 3f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP3, getTheme()));
+
+        } else if (GDOP[i][j] >= 3f && GDOP[i][j] < 3.5f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP35, getTheme()));
+
+        } else if (GDOP[i][j] >= 3.5f && GDOP[i][j] < 4f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP4, getTheme()));
+
+        } else if (GDOP[i][j] >= 4f && GDOP[i][j] < 4.5f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP45, getTheme()));
+
+        } else if (GDOP[i][j] >= 4.5f) {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP5, getTheme()));
+
+        } else {
+            bitmap.setPixel(i, j, getResources().getColor(R.color.checkCl, getTheme()));
+        }*/
 
         roomImageView.setGDOPbitmap(bitmap);
     }

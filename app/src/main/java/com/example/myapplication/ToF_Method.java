@@ -8,10 +8,10 @@ import Jama.Matrix;
 
 public class ToF_Method {
 
-private MainActivity Main;
+    private MainActivity Main;
     private MainActivity.RoomImageView roomImageView;
 
-    public double [][] main(ArrayList<Point> PointList,int KX,int KY) {
+    public double[][] main(ArrayList<Point> PointList, int KX, int KY) {
         int OX = 0; // начальная координата OX
         int OY = 0; // начальная координата OY
         int h = 1; // шаг
@@ -47,5 +47,6 @@ private MainActivity Main;
 
     }
 
-}
+    }
+
 

@@ -35,8 +35,12 @@ import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 
+import Jama.Matrix;
+
 import static java.lang.Math.abs;
+import static java.lang.Math.pow;
 import static java.lang.Math.random;
+import static java.lang.Math.sqrt;
 
 public class MainActivity extends Activity implements View.OnTouchListener {
     TextView tv;
@@ -59,6 +63,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     //private GDOPImageView gdopImageView;
     private ToF_Method ToF_method;
     private TDoA_Method TDoA_method;
+    private double[][] GDOPscreen = new double[roomImageView.getWidth()][roomImageView.getHeight()];
     ////////////////////////////////////////////////
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
@@ -199,25 +204,27 @@ public class MainActivity extends Activity implements View.OnTouchListener {
          * delivers it the parameters given to AsyncTask.execute() */
         protected double[][] doInBackground(String... method) {
 //        if(Arrays.toString(method).equals("ToF")) {
-            if(FlagRoom) {
-                for (int i = 0; i < roomImageView.getHeight(); i++)
-                    for (int j = 0; j < roomImageView.getWidth(); j++) {
+            //double X = 0;
+            int X = 0;
+            //double Y = 0;
+            int Y = 0;
+           // if(FlagRoom) {
+
+                for (int i = 0; i < GDOPscreen.length; i++) {
+                    for (int j = 0; j < GDOPscreen[0].length; j++) {
                         for (int k = 0; k < roomImageView.PointList.size(); k++) {
-                            double ax1 = i;
-                            double ay1 = j;
-                            //double ax2 = SatPos[0, i];
-                            double ax2 = roomImageView.PointList.get(k).x;
-                            //double ay2 = SatPos[1, i];
-                            double ay2 = roomImageView.PointList.get(k).y;
-                            //indintersection = false;
+                            //double ax1 = i;
+                            int ax1 = i;
+                            //double ay1 = j;
+                            int ay1 = j;
+                            //double ax2 = roomImageView.PointList.get(k).x;
+                            int ax2 = roomImageView.PointList.get(k).x;
+                            //double ay2 = roomImageView.PointList.get(k).y;
+                            int ay2 = roomImageView.PointList.get(k).y;
                             for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
-                                //double bx1 = BoxClone[0, j];
                                 double bx1 = roomImageView.CornerList.get(m).x;
-                                //double by1 = BoxClone[1, j];
                                 double by1 = roomImageView.CornerList.get(m).y;
-                                //double bx2 = BoxClone[0, j + 1];
                                 double bx2 = roomImageView.CornerList.get(m + 1).x;
-                                //double by2 = BoxClone[1, j + 1];
                                 double by2 = roomImageView.CornerList.get(m + 1).y;
                                 double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
                                 double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
@@ -228,17 +235,67 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 }
                             }
                         }
-                        roomImageView.TruePointList.clear();
-                    }
-                if (FlagMethod) {
-                    ToF_Method ToF_method = new ToF_Method();
-                    FlagMethod = true;
-                    return ToF_method.main(roomImageView.TruePointList, roomImageView.getWidth(), roomImageView.getHeight());
-                } else {
-                    TDoA_Method TDoA_method = new TDoA_Method();
-                    return TDoA_method.main(roomImageView.TruePointList, roomImageView.getWidth(), roomImageView.getHeight());
-                }
+                        X = i;
+                        Y = j;
+                        int h = 1; // шаг
+                        int k = 0; // счёт
+                        int[][] SatPos = new int[2][roomImageView.TruePointList.size()];
+                        double[][] H = new double [roomImageView.TruePointList.size()][2];
+                        //double[][] Gdop = new double[KX][KY];
+                        //roomImageView.TruePointList.clear();
+                        for (int im = 0; i < roomImageView.TruePointList.size(); i++)
+                        {
+                            SatPos[0][im] = roomImageView.TruePointList.get(im).x;
+                            SatPos[1][im] = roomImageView.TruePointList.get(im).y;
+                        }
+                        if(FlagMethod) {
+                            //for (int x = 0; x < roomImageView.getWidth(); x = x + h) {
+                            //for (int y = 0; y < roomImageView.getHeight(); y = y + h) {
+                            while (k < roomImageView.TruePointList.size()) {
+                                H[k][0] = ((X - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
+                                H[k][1] = ((X - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
+                                k += 1;
+                            }
+                            k = 0;
+                            Matrix A = new Matrix(H);
+                            GDOPscreen[X][Y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+                            //}
+
+                            //}
+                        } else {
+                            double X1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).x;
+                            double Y1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).y;
+                            double SQRT1 = 0;
+                            double SQRT2 = 0;
+                                    while (k < roomImageView.TruePointList.size() - 1) {
+                                        SQRT1 = (sqrt(pow((X - SatPos[0][k]),2) + pow((Y - SatPos[1][k]),2)));
+                                        SQRT2 = (sqrt(pow((X - X1),2) + pow((Y - Y1),2)));
+                                        H[k][0] = (((X - SatPos[0][k])/SQRT1) - ((X - X1)/SQRT2));
+                                        H[k][1] = (((Y - SatPos[1][k])/SQRT1) - ((Y - Y1)/SQRT2));
+                                        k += 1;
+
+                                    }
+                                    k = 0;
+                                    Matrix A = new Matrix(H);
+                                    GDOPscreen[X][Y] = sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+                                }
+
+                            }
+                        }
+
+
+
+/*
+            if (FlagMethod) {
+                ToF_Method ToF_method = new ToF_Method();
+                FlagMethod = true;
+                return ToF_method.main(roomImageView.TruePointList, X, Y);
             } else {
+                TDoA_Method TDoA_method = new TDoA_Method();
+                return TDoA_method.main(roomImageView.TruePointList, X, Y);
+            }
+*/
+            //} else {
                 if (FlagMethod) {
                     ToF_Method ToF_method = new ToF_Method();
                     FlagMethod = true;
@@ -246,8 +303,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 } else {
                     TDoA_Method TDoA_method = new TDoA_Method();
                     return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
-                }
-            }
+                } 
+           // }
+
         }
 
 

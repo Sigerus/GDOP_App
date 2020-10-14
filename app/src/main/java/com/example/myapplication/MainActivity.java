@@ -374,6 +374,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 roomImageView.PointList.get(i).y = getY;
                             } else if (getY < 0) {
                                 roomImageView.PointList.get(i).y = 0;
+                            //} else if (roomImageView.PointList.get(i).x > ) {
+                            //    roomImageView.PointList.get(i).y = 0;
                             } else if (getY > roomImageView.getHeight()) {
                                 roomImageView.PointList.get(i).y = roomImageView.getHeight();
                                 roomImageView.PointList.get(i).x = getX;

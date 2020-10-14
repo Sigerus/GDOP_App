@@ -8,7 +8,7 @@ import Jama.Matrix;
 
 import static java.lang.Math.*;
 
-public class TDoA_Method {
+public class  TDoA_Method {
 
 private MainActivity Main;
    // private MainActivity.RoomImageView roomImageView;
@@ -21,7 +21,6 @@ private MainActivity Main;
         int[][] SatPos = new int[2][PointList.size()];
         double[][] H = new double [PointList.size() - 1][2];
         double[][] Gdop = new double[KX][KY];
-
 
         for (int i = 0; i < PointList.size(); i++)
         {

@@ -63,7 +63,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     //private GDOPImageView gdopImageView;
     private ToF_Method ToF_method;
     private TDoA_Method TDoA_method;
-    private double[][] GDOPscreen = new double[roomImageView.getWidth()][roomImageView.getHeight()];
+    private double[][] GDOPscreen;// = new double[roomImageView.getWidth()][roomImageView.getHeight()];
+
+    public void setGDOPscreen(double[][] GDOPscreen) {
+        this.GDOPscreen = GDOPscreen;
+    }
+
     ////////////////////////////////////////////////
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
@@ -184,8 +189,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), String.valueOf(roomImageView.getWidth()) + " " + String.valueOf(roomImageView.getHeight()), Toast.LENGTH_LONG).show();
                 FlagRoom = false;
-
+                setGDOPscreen(new double[roomImageView.getWidth()][roomImageView.getHeight()]);
                 double[][] Gdop;
+                Log.d("tigers",String.valueOf(roomImageView.getWidth()) + " " + String.valueOf(roomImageView.getHeight()));
                 Log.d("Matrix calc started", String.valueOf(SystemClock.elapsedRealtimeNanos()));
                 //создаем отдельный поток для расчета матрицы
                 new CalcGDOP().execute();
@@ -210,9 +216,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             int Y = 0;
            // if(FlagRoom) {
 
-                for (int i = 0; i < GDOPscreen.length; i++) {
-                    for (int j = 0; j < GDOPscreen[0].length; j++) {
-                        for (int k = 0; k < roomImageView.PointList.size(); k++) {
+                for (int i = 0; i < GDOPscreen.length - 1; i++) {
+                    for (int j = 0; j < GDOPscreen[0].length - 1; j++) {
+                        /*for (int k = 0; k < roomImageView.PointList.size(); k++) {
                             //double ax1 = i;
                             int ax1 = i;
                             //double ay1 = j;
@@ -230,10 +236,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
                                 double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
                                 double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                                if ((v1 * v2 < 0) && (v3 * v4 < 0)) {
+                                if (((v1 * v2 < 0) && (v3 * v4 < 0))) {
                                     roomImageView.TruePointList.add(roomImageView.PointList.get(k));
                                 }
                             }
+                        }*/
+                        for(int ag = 0; ag < roomImageView.PointList.size(); ag++)
+                        {
+                            roomImageView.TruePointList.add(roomImageView.PointList.get(ag));
                         }
                         X = i;
                         Y = j;
@@ -243,26 +253,27 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         double[][] H = new double [roomImageView.TruePointList.size()][2];
                         //double[][] Gdop = new double[KX][KY];
                         //roomImageView.TruePointList.clear();
-                        for (int im = 0; i < roomImageView.TruePointList.size(); i++)
+                        for (int im = 0; im < roomImageView.TruePointList.size(); im++)
                         {
                             SatPos[0][im] = roomImageView.TruePointList.get(im).x;
                             SatPos[1][im] = roomImageView.TruePointList.get(im).y;
                         }
                         if(FlagMethod) {
-                            //for (int x = 0; x < roomImageView.getWidth(); x = x + h) {
-                            //for (int y = 0; y < roomImageView.getHeight(); y = y + h) {
-                            while (k < roomImageView.TruePointList.size()) {
-                                H[k][0] = ((X - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
-                                H[k][1] = ((X - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
-                                k += 1;
+                            if(roomImageView.TruePointList.size() >= 3) {
+                                while (k < roomImageView.TruePointList.size()) {
+                                    H[k][0] = ((X - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
+                                    H[k][1] = ((X - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
+                                    k += 1;
+                                }
+                                k = 0;
+                                Matrix A = new Matrix(H);
+                                GDOPscreen[i][j] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
                             }
-                            k = 0;
-                            Matrix A = new Matrix(H);
-                            GDOPscreen[X][Y] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
-                            //}
-
-                            //}
+                            else {
+                                GDOPscreen[i][j] = 0;
+                            }
                         } else {
+
                             double X1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).x;
                             double Y1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).y;
                             double SQRT1 = 0;
@@ -277,8 +288,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                     }
                                     k = 0;
                                     Matrix A = new Matrix(H);
-                                    GDOPscreen[X][Y] = sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+                                    GDOPscreen[i][j] = sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
                                 }
+                        roomImageView.TruePointList.clear();
 
                             }
                         }
@@ -296,16 +308,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
 */
             //} else {
-                if (FlagMethod) {
+                /*if (FlagMethod) {
                     ToF_Method ToF_method = new ToF_Method();
                     FlagMethod = true;
                     return ToF_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
                 } else {
                     TDoA_Method TDoA_method = new TDoA_Method();
                     return TDoA_method.main(roomImageView.PointList, roomImageView.getWidth(), roomImageView.getHeight());
-                } 
+                } */
            // }
-
+            return GDOPscreen;
         }
 
 
@@ -322,7 +334,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
             for (int i = 0; i < GDOP.length; i++)
                 for (int j = 0; j < GDOP[0].length; j++) {
-                                if (GDOP[i][j] <= 1) {
+                                if(GDOP[i][j] == 0)
+                                {
+                                    bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP0, getTheme()));
+                                }
+                                else if (GDOP[i][j] <= 1) {
                                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
 
                                 } else if (GDOP[i][j] > 1f && GDOP[i][j] < 1.2f) {

@@ -60,20 +60,19 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private ToF_Method ToF_method;
     private TDoA_Method TDoA_method;
     ////////////////////////////////////////////////
-    private int pointImageHeight = 0;
-    private int pointImageWidth = 0;
-    private int ScreenStep = 100;
-    private int gridValueX = 0;
-    private int gridValueY = 0;
-    private int gridcountX=8;
-    private int gridcountY=18;
+    public int pointImageHeight = 0;
+    public int pointImageWidth = 0;
+    public int ScreenStep = 100;
+    public int gridValueX = 0;
+    public int gridValueY = 0;
+    public int gridcountX=8;
+    public int gridcountY=18;
     ///////////////////////////////////////////////
     String Touch = "";
     String MoveTouch = "";
     public int Key = 0;
     public int Corners = 0;
-
-    private ImageView drawingImageView;
+    public ImageView drawingImageView;
     public boolean Flag = true;
 //    private CoordMap coordMap;
 
@@ -96,6 +95,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Room = findViewById(R.id.room);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
+
 
 // плохой код. только для демонстрации
         // imageView.setImageDrawable(new DrawView(this));
@@ -143,49 +143,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                         //Corners = Integer.parseInt(userInput.getText().toString());
                                         gridValueX=Integer.parseInt(inputX.getText().toString());
                                         gridValueY=Integer.parseInt(inputY.getText().toString());
-
-
                                         pointImageWidth = roomImageView.getWidth();
                                         pointImageHeight = roomImageView.getHeight();
-                                        Bitmap bitmap = Bitmap.createBitmap((int) pointImageWidth, pointImageHeight , Bitmap.Config.ARGB_8888);
-                                        final Canvas canvas = new Canvas(bitmap);
-                                        drawingImageView.setImageBitmap(bitmap);
-
-                                        final Paint paint = new Paint();
-                                        paint.setColor(Color.DKGRAY);
-                                        paint.setStrokeWidth(3);
-
-                                        final Paint paint1 = new Paint();
-                                        paint1.setColor(Color.BLACK);
-                                        paint1.setStrokeWidth(8);
-
-
-                                        Paint shadowPaint = new Paint();
-                                        shadowPaint.setTextSize(40.0f);
-                                        shadowPaint.setShadowLayer(00.0f, 0.0f, 0.0f, Color.BLACK);
-
-
-                                        canvas.drawText(Integer.toString(0),50,1850,shadowPaint);
-                                        canvas.drawLine(0,1800,pointImageWidth,1800,paint1 );//ох
-                                        canvas.drawLine(100,0,100,pointImageHeight,paint1 );//оу
-
-                                        for (int i = 0; i <= pointImageHeight-200; i += ScreenStep) { // Горизонтальные линии
-                                            canvas.drawText(String.valueOf(gridValueY-gridValueY/gridcountY*i/ScreenStep), 5, i +110, shadowPaint);
-                                            //canvas.drawText(String.valueOf(pointImageHeight - 50), 5, i + 10, shadowPaint);
-                                        }
-
-                                        for (int i = 0; i <= pointImageWidth-200; i += ScreenStep) { // Вертикальные линии
-                                           canvas.drawText(String.valueOf(gridValueX-gridValueX/gridcountX*i/ScreenStep),870-i,1850,shadowPaint);
-                                            //canvas.drawText(String.valueOf(pointImageWidth - 100),i+170,1850,shadowPaint);
-                                        }
-
-                                        for (int i = 0; i <= pointImageHeight; i += ScreenStep) { // Вертикальные линии
-                                            canvas.drawLine(100, i, pointImageWidth, i, paint);
-                                        }
-
-                                        for (int i = 0; i <= pointImageWidth; i += ScreenStep) {// Горизонтальные линии
-                                            canvas.drawLine(i, 0, i, 1800, paint);
-                                        }
+                                        roomImageView.height=pointImageHeight;
+                                        roomImageView.width=pointImageWidth;
+                                      roomImageView.valueX=gridValueX;
+                                      roomImageView.valueY=gridValueY;
                                         arg0.setClickable(false);
 
 
@@ -201,7 +164,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
                 //и отображаем его:
                 alertDialog.show();
-
+                invalidateOptionsMenu();
             }
         });
 
@@ -468,12 +431,20 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         //public int MaxSatCount = 0;
         public ArrayList<Point> PointList = new ArrayList<Point>();
         public ArrayList<Point> CornerList = new ArrayList<Point>();
+        public ArrayList<Point> lines = new ArrayList<Point>();
+        public int height;
         private Point point;
         Bitmap GDOPbitmap;
         Bitmap bitmapAlpha;
         double[][] GDOP;
         boolean redrawGDOP;
-
+        public int width;
+        public int ScreenStep = 100;
+        public int gridcountX=8;
+        private RoomImageView roomImageView;
+        public int gridcountY=18;
+        public int valueX;
+        public int valueY;
         public void setGDOPbitmap(Bitmap GDOPbitmap) {
             this.GDOPbitmap = GDOPbitmap;
         }
@@ -588,15 +559,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
+            super.onDraw(canvas)
+            ;
         }
 
         @Override
         public void draw(Canvas canvas) {
             super.draw(canvas);
-            Paint paint = new Paint();
-            paint.setColor(Color.BLACK);
-            paint.setStrokeWidth(30f);
+            Paint paint4 = new Paint();
+            paint4.setColor(Color.BLACK);
+            paint4.setStrokeWidth(30f);
 
             if (GDOP != null) {
                 DrawBitMap(canvas);
@@ -605,7 +577,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
             }
             for (Point p : PointList) {
-                canvas.drawPoint(p.x, p.y, paint);
+                canvas.drawPoint(p.x, p.y, paint4);
                 invalidate();
             }
             Paint RoomLine = new Paint();
@@ -614,8 +586,45 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             Paint Corner = new Paint();
             Corner.setColor(Color.BLACK);
 
+            //Bitmap bitmap = Bitmap.createBitmap((int) width, height , Bitmap.Config.ARGB_8888);
+           // final Canvas canvas = new Canvas(bitmap);
+         //   drawingImageView.setImageBitmap(bitmap);
+
+            final Paint paint = new Paint();
+            paint.setColor(Color.DKGRAY);
+            paint.setStrokeWidth(3);
+
+            final Paint paint1 = new Paint();
+            paint1.setColor(Color.BLACK);
+            paint1.setStrokeWidth(8);
 
 
+            Paint shadowPaint = new Paint();
+            shadowPaint.setTextSize(40.0f);
+            shadowPaint.setShadowLayer(00.0f, 0.0f, 0.0f, Color.BLACK);
+
+
+            canvas.drawText(Integer.toString(0),50,1850,shadowPaint);
+            canvas.drawLine(0,1800,width,1800,paint1 );//ох
+            canvas.drawLine(100,0,100,height,paint1 );//оу
+
+            for (int i = 0; i <= height-200; i += ScreenStep) { // Горизонтальные линии
+                canvas.drawText(String.valueOf(valueY-valueY/gridcountY*i/ScreenStep), 5, i +110, shadowPaint);
+                //canvas.drawText(String.valueOf(pointImageHeight - 50), 5, i + 10, shadowPaint);
+            }
+
+            for (int i = 0; i <= width-200; i += ScreenStep) { // Вертикальные линии
+                canvas.drawText(String.valueOf(valueX-valueX/gridcountX*i/ScreenStep),870-i,1850,shadowPaint);
+                //canvas.drawText(String.valueOf(pointImageWidth - 100),i+170,1850,shadowPaint);
+            }
+
+            for (int i = 0; i <= height; i += ScreenStep) { // Вертикальные линии
+                canvas.drawLine(100, i, width, i, paint);
+            }
+
+            for (int i = 0; i <= width; i += ScreenStep) {// Горизонтальные линии
+                canvas.drawLine(i, 0, i, 1800, paint);
+            }
         }
     }
 

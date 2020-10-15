@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import Jama.Matrix;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.lang.Math.pow;
 import static java.lang.Math.random;
 import static java.lang.Math.sqrt;
@@ -214,43 +216,56 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             int X = 0;
             //double Y = 0;
             int Y = 0;
-           // if(FlagRoom) {
-
-                for (int i = 0; i < GDOPscreen.length - 1; i++) {
+            // if(FlagRoom) {
+            /**Intersection algorithm
+             * source: https://e-maxx.ru/algo/segments_intersection_checking
+             * A = currnetGDOPpoint
+             * B = Curent anchor
+             * C = First corner of the room
+             * D = Second corner of the room
+              */
+            for (int i = 0; i < GDOPscreen.length - 1; i++) {
                     for (int j = 0; j < GDOPscreen[0].length - 1; j++) {
-                        /*for (int k = 0; k < roomImageView.PointList.size(); k++) {
-                            //double ax1 = i;
-                            int ax1 = i;
-                            //double ay1 = j;
-                            int ay1 = j;
+                        Point currentGDOPpoint = new Point(i,j);
+                        for (int k = 0; k < roomImageView.PointList.size(); k++) {
+                            Point currentAnchor = new Point(roomImageView.PointList.get(k));
                             //double ax2 = roomImageView.PointList.get(k).x;
-                            int ax2 = roomImageView.PointList.get(k).x;
+                            //int ax2 = roomImageView.PointList.get(k).x;
                             //double ay2 = roomImageView.PointList.get(k).y;
-                            int ay2 = roomImageView.PointList.get(k).y;
-                            for (int m = 0; m < roomImageView.CornerList.size() - 1; m++) {
-                                double bx1 = roomImageView.CornerList.get(m).x;
-                                double by1 = roomImageView.CornerList.get(m).y;
-                                double bx2 = roomImageView.CornerList.get(m + 1).x;
-                                double by2 = roomImageView.CornerList.get(m + 1).y;
-                                double v1 = (bx2 - bx1) * (ay1 - by1) - (by2 - by1) * (ax1 - bx1);
-                                double v2 = (bx2 - bx1) * (ay2 - by1) - (by2 - by1) * (ax2 - bx1);
-                                double v3 = (ax2 - ax1) * (by1 - ay1) - (ay2 - ay1) * (bx1 - ax1);
-                                double v4 = (ax2 - ax1) * (by2 - ay1) - (ay2 - ay1) * (bx2 - ax1);
-                                if (((v1 * v2 < 0) && (v3 * v4 < 0))) {
-                                    roomImageView.TruePointList.add(roomImageView.PointList.get(k));
+                            //int ay2 = roomImageView.PointList.get(k).y;
+                            boolean intersection = false;
+                            for (int m = 0; m < roomImageView.CornerList.size()-1; m++) {
+                                Point firstCorner = new Point(roomImageView.CornerList.get(m));
+                                Point secondCorner = new Point(roomImageView.CornerList.get(m+1));
+                                double v1 = (secondCorner.x - firstCorner.x) * (currentGDOPpoint.y - firstCorner.y) -
+                                            (secondCorner.y - firstCorner.y) * (currentGDOPpoint.x - firstCorner.x);
+                                double v2 = (secondCorner.x - firstCorner.x) * (currentAnchor.y - firstCorner.y) -
+                                            (secondCorner.y - firstCorner.y) * (currentAnchor.x - firstCorner.x);
+                                double v3 = (currentAnchor.x - currentGDOPpoint.x) * (firstCorner.y - currentGDOPpoint.y) -
+                                            (currentAnchor.y - currentGDOPpoint.y) * (firstCorner.x - currentGDOPpoint.x);
+                                double v4 = (currentAnchor.x - currentGDOPpoint.x) * (secondCorner.y - currentGDOPpoint.y) -
+                                            (currentAnchor.y - currentGDOPpoint.y) * (secondCorner.x - currentGDOPpoint.x);
+                                if (((v1 * v2 < 0) && (v3 * v4 < 0)))
+                                {
+                                    intersection = true;
                                 }
+
                             }
-                        }*/
-                        for(int ag = 0; ag < roomImageView.PointList.size(); ag++)
-                        {
-                            roomImageView.TruePointList.add(roomImageView.PointList.get(ag));
+                            if(!intersection)
+                            {
+                                roomImageView.TruePointList.add(roomImageView.PointList.get(k));
+                                Log.d("ArTack", String.valueOf(roomImageView.TruePointList.size()));
+                            }
                         }
+
+                        //roomImageView.TruePointList.addAll(roomImageView.PointList);
                         X = i;
                         Y = j;
                         int h = 1; // шаг
                         int k = 0; // счёт
                         int[][] SatPos = new int[2][roomImageView.TruePointList.size()];
-                        double[][] H = new double [roomImageView.TruePointList.size()][2];
+                        Matrix H = new Matrix(roomImageView.TruePointList.size(),2);
+                        //double[][] H = new double [roomImageView.TruePointList.size()][2];
                         //double[][] Gdop = new double[KX][KY];
                         //roomImageView.TruePointList.clear();
                         for (int im = 0; im < roomImageView.TruePointList.size(); im++)
@@ -261,13 +276,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         if(FlagMethod) {
                             if(roomImageView.TruePointList.size() >= 3) {
                                 while (k < roomImageView.TruePointList.size()) {
-                                    H[k][0] = ((X - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
-                                    H[k][1] = ((X - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[1][k], 2))));
+                                    H.set(k,0,((X - SatPos[0][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(Y - SatPos[1][k], 2)))));
+                                    H.set(k,1,((Y - SatPos[1][k]) / (java.lang.Math.sqrt(java.lang.Math.pow(X - SatPos[0][k], 2)) + java.lang.Math.sqrt(java.lang.Math.pow(Y - SatPos[1][k], 2)))));
                                     k += 1;
                                 }
                                 k = 0;
-                                Matrix A = new Matrix(H);
-                                GDOPscreen[i][j] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+                                //Matrix A = new Matrix(H);
+                                //GDOPscreen[i][j] = Math.sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+                                GDOPscreen[i][j] = Math.sqrt(((H.transpose().times(H)).inverse()).trace());
+                                Log.d("SYKA BLYAD MATRIX", String.valueOf(GDOPscreen[i][j]));
                             }
                             else {
                                 GDOPscreen[i][j] = 0;
@@ -281,14 +298,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                     while (k < roomImageView.TruePointList.size() - 1) {
                                         SQRT1 = (sqrt(pow((X - SatPos[0][k]),2) + pow((Y - SatPos[1][k]),2)));
                                         SQRT2 = (sqrt(pow((X - X1),2) + pow((Y - Y1),2)));
-                                        H[k][0] = (((X - SatPos[0][k])/SQRT1) - ((X - X1)/SQRT2));
-                                        H[k][1] = (((Y - SatPos[1][k])/SQRT1) - ((Y - Y1)/SQRT2));
+                                        H.set(k,0,(((X - SatPos[0][k])/SQRT1) - ((X - X1)/SQRT2)));
+                                        H.set(k,1,(((Y - SatPos[1][k])/SQRT1) - ((Y - Y1)/SQRT2)));
                                         k += 1;
 
                                     }
                                     k = 0;
-                                    Matrix A = new Matrix(H);
-                                    GDOPscreen[i][j] = sqrt(((A.transpose().times(Matrix.constructWithCopy(H))).inverse()).trace());
+                                    //Matrix A = new Matrix(H);
+                                    GDOPscreen[i][j] = sqrt(((H.transpose().times(H)).inverse()).trace());
                                 }
                         roomImageView.TruePointList.clear();
 
@@ -328,6 +345,27 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             roomImageView.setGDOP(result);
             CreateBitMap(result);
         }
+    }
+    public  boolean intersection_1(int a,int b,int c, int d)
+    {
+        if(a>b)
+        {
+            a += b;
+            b = a -b;
+            a = a- b;
+        }
+        if(c>d)
+        {
+            c += d;
+            d = c-d;
+            c = c-d;
+        }
+        return max(a,c) <= min(b,d);
+    }
+
+    public int area(Point a,Point b,Point c)
+    {
+        return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
     }
     public void CreateBitMap(double[][] GDOP) {
         Bitmap bitmap = Bitmap.createBitmap( roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
@@ -459,7 +497,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                             }
                             /*for (int j = 0; j < roomImageView.PointList.size(); j++) {
                                 if ((roomImageView.PointList.get(i).x == roomImageView.PointList.get(j).x) && (roomImageView.PointList.get(i).y == roomImageView.PointList.get(j).y)) {
-                                    
+
                                 }
                             }*/
 

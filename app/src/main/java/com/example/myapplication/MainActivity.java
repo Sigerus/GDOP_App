@@ -145,10 +145,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                         gridValueY=Integer.parseInt(inputY.getText().toString());
                                         pointImageWidth = roomImageView.getWidth();
                                         pointImageHeight = roomImageView.getHeight();
+                                        roomImageView.valueX=gridValueX;
+                                        roomImageView.valueY=gridValueY;
                                         roomImageView.height=pointImageHeight;
                                         roomImageView.width=pointImageWidth;
-                                      roomImageView.valueX=gridValueX;
-                                      roomImageView.valueY=gridValueY;
+
                                         arg0.setClickable(false);
 
 

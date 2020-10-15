@@ -116,9 +116,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     Key += Integer.parseInt(Beacons.getText().toString());
                     Beacons.setKeyListener(null);
                     v.setClickable(false);
-                    GDOPCalcManager gdopCalcManager = new GDOPCalcManager();
-                    Toast.makeText(getApplicationContext(), String.valueOf(gdopCalcManager.decodeThreadPool.getPoolSize()), Toast.LENGTH_LONG).show();
-
                     // Beacons.setText("");
                 }
             }
@@ -135,7 +132,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onClick(View v) {
                 // tv.setText("Какая-нибудь хуйня");
-                // Toast.makeText(getApplicationContext(), String.valueOf(roomImageView.getWidth()) + " " + String.valueOf(roomImageView.getHeight()), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.valueOf(roomImageView.getWidth()) + " " + String.valueOf(roomImageView.getHeight()), Toast.LENGTH_LONG).show();
                 GDOPCalcManager gdopCalcManager = new GDOPCalcManager();
 
                 //double[][] Gdop;
@@ -167,27 +164,26 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         });
     }
 
-    private class CalcGDOP extends AsyncTask<String, Void, double[][]> {
-
+    private class CalcGDOP extends AsyncTask<String, Void, Bitmap> {
         /**
          * The system calls this to perform work in a worker thread and
          * delivers it the parameters given to AsyncTask.execute()
          */
-        protected double[][] doInBackground(String... method) {
+        protected Bitmap doInBackground(String... method) {
             MatrixMath matrixMath = new MatrixMath();
             Log.i("doInBackground", "task started " + SystemClock.elapsedRealtimeNanos());
-            /// double[][] Gdop = new double[roomImageView.getWidth()][roomImageView.getHeight()];
-            return matrixMath.main(roomImageView.PointList, Integer.parseInt(method[1]), Integer.parseInt(method[2]), Integer.parseInt(method[3]), Integer.parseInt(method[4]));
+            double[][] Gdop = new double[roomImageView.getWidth()][roomImageView.getHeight()];
+            Gdop =  matrixMath.main(roomImageView.PointList, Integer.parseInt(method[1]), Integer.parseInt(method[2]), Integer.parseInt(method[3]), Integer.parseInt(method[4]));
+            return CreateBitMap(Gdop,Integer.parseInt(method[1]), Integer.parseInt(method[2]), Integer.parseInt(method[3]), Integer.parseInt(method[4]),Integer.parseInt(method[5]));
         }
-
         /**
          * The system calls this to perform work in the UI thread and delivers
          * the result from doInBackground()
          */
-        protected void onPostExecute(double[][] result) {
+        protected void onPostExecute(Bitmap result) {
             Log.i("onPostExecute", "task finished " + SystemClock.elapsedRealtimeNanos());
-            roomImageView.setGDOP(result);
-            CreateBitMap(result);
+            //roomImageView.setGDOP(result);
+            //CreateBitMap(result);
         }
     }
 
@@ -218,15 +214,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     }
 
-    public void CreateBitMap(double[][] GDOP,int OX,int OY, int KX, int KY) {
+    public Bitmap CreateBitMap(double[][] GDOP,int OX,int OY, int KX, int KY,int ind) {
         Log.i("CreateBitMap", "CreateBitMap started " + SystemClock.elapsedRealtimeNanos());
         // Canvas canvas = new Canvas();
         //int[] colors = new int[roomImageView.getWidth() * roomImageView.getHeight()];
         //Bitmap bitmap = Bitmap.createBitmap(colors, 300, 300, Bitmap.Config.RGB_565);
-        Bitmap bitmap = Bitmap.createBitmap(roomImageView.getWidth(), roomImageView.getHeight(), Bitmap.Config.RGB_565);
+        Bitmap bitmap = Bitmap.createBitmap(KX-OX, KY-OY, Bitmap.Config.RGB_565);
         //Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        for (int i = 0; i < GDOP.length; i++)
-            for (int j = 0; j < GDOP[0].length; j++) {
+        for (int i = 0; i < bitmap.getWidth(); i++) {
+            for (int j = 0; j < bitmap.getHeight(); j++) {
                 // Paint paint = new Paint();
                 if (GDOP[i][j] <= 1) {
                     bitmap.setPixel(i, j, getResources().getColor(R.color.colorGDOP1, getTheme()));
@@ -299,8 +295,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     // break;
                 }
             }
-        roomImageView.setGDOPbitmap(bitmap);
-        roomImageView.invalidateImage();
+        }
+        roomImageView.setGDOPbitmap(bitmap, ind);
+        roomImageView.setBitmaprdy(true, ind);
+        //roomImageView.invalidateImage();
+        if(roomImageView.bitmap1rdy && roomImageView.bitmap2rdy)
+        {
+         roomImageView.GDOPbitmap = roomImageView.mergeBitmap(roomImageView.GDOPbitmap1,roomImageView.GDOPbitmap2);
+        }
         Log.i("CreateBitMap", "CreateBitMap finished " + SystemClock.elapsedRealtimeNanos());
            /* int[] colors = new int[300 * 300];
             Arrays.fill(colors, 0, 300 * 100, Color.argb(85, 255, 0, 0));
@@ -312,6 +314,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             canvas.drawBitmap(bitmap, 50, 50, paint);
             canvas.drawBitmap(bitmapAlpha, 550, 50, paint);
             invalidate();*/
+           return bitmap;
     }
     /*    public class MySurfaceThread extends Thread {
 
@@ -435,7 +438,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 }
             }
         }*/
-
 
     /*public void AddBeacon(View view) {
         Key += 1;
@@ -584,17 +586,34 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         //public int MaxSatCount = 0;
         public ArrayList<Point> PointList = new ArrayList<Point>();
         private Point point;
+
         Bitmap GDOPbitmap1;
+        boolean bitmap1rdy;
         Bitmap GDOPbitmap2;
+        boolean bitmap2rdy;
+        Bitmap GDOPbitmap;
         Bitmap bitmapAlpha;
         double[][] GDOP;
         boolean redrawGDOP;
 
-        public void setGDOPbitmap1(Bitmap GDOPbitmap) {
-            this.GDOPbitmap1 = GDOPbitmap;
+        public void setGDOPbitmap(Bitmap GDOPbitmap,int ind) {
+            if (ind == 1) {
+                this.GDOPbitmap1 = GDOPbitmap;
+                Log.i("GDOPbitmap1", "GDOPbitmap1 finished " + SystemClock.elapsedRealtimeNanos());
+            } else if(ind ==2){
+                this.GDOPbitmap2 = GDOPbitmap;
+                Log.i("GDOPbitmap2", "GDOPbitmap2 finished " + SystemClock.elapsedRealtimeNanos());
+            }
         }
-        public void setGDOPbitmap2(Bitmap GDOPbitmap) {
-            this.GDOPbitmap2 = GDOPbitmap;
+
+        public void setBitmaprdy(boolean bitmaprdy,int ind) {
+            if (ind == 1) {
+                this.bitmap1rdy = bitmaprdy;
+                Log.i("bitmap1rdy", "bitmap1rdy finished " + SystemClock.elapsedRealtimeNanos());
+            } else if(ind ==2){
+                this.bitmap2rdy = bitmaprdy;
+                Log.i("bitmap2rdy", "bitmap2rdy finished " + SystemClock.elapsedRealtimeNanos());
+            }
         }
 
         public void setGDOP(double[][] GDOP) {
@@ -709,14 +728,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             Log.d("Render finished", String.valueOf(SystemClock.elapsedRealtimeNanos()));
         }
 
-        public static Bitmap mergeBitmap(Bitmap back, Bitmap front) {
-            Bitmap result = Bitmap.createBitmap(back.getWidth(), back.getHeight(), back.getConfig());
+        public Bitmap mergeBitmap(Bitmap back, Bitmap front) {
+            Bitmap result = Bitmap.createBitmap(back.getWidth(), back.getHeight()+front.getHeight(), back.getConfig());
             Canvas canvas = new Canvas(result);
-            int widthBack = back.getWidth();
-            int widthFront = front.getWidth();
-            float move = (widthBack - widthFront) / 2;
-            canvas.drawBitmap(back, 0f, 0f, null);
-            canvas.drawBitmap(front, move, move, null);
+            canvas.drawBitmap(back, 0f, 0, null);
+            canvas.drawBitmap(front, 0f, result.getHeight()/2f, null);
+            Log.i("mergeBitmap", "mergeBitmap finished " + SystemClock.elapsedRealtimeNanos());
             return result;
         }
 
@@ -818,7 +835,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(30f);
-            if (GDOP != null) {
+            if (GDOPbitmap != null) {
                 // DrawGDOP(canvas);
                 DrawBitMap(canvas);
             }
@@ -838,7 +855,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 canvas.drawPoint(p.x, p.y, paint);
                 invalidate();
             }
-
         }
     }
 

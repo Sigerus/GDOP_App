@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     Button Plus;
     Button Go;
     Button KO;
+    Button OXOY;
     //////////////////////////////////////////////////
     Button Room;
     final Context context = this;
@@ -63,7 +64,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     private int pointImageHeight = 0;
     private int pointImageWidth = 0;
     private int ScreenStep = 100;
-
+    public int gridValueX = 0;
+    public int gridValueY = 0;
 
     ///////////////////////////////////////////////
     String Touch = "";
@@ -92,6 +94,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Go = findViewById(R.id.button3);
         Room = findViewById(R.id.button5);
         KO = findViewById(R.id.button4);
+        OXOY = findViewById(R.id.room);
 
         roomImageView = (RoomImageView) findViewById(R.id.imageView);
         roomImageView.setOnTouchListener(this);
@@ -114,6 +117,52 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         });
 
 
+        OXOY.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View arg0) {
+                LayoutInflater li = LayoutInflater.from(context);
+                View roomdialogView = li.inflate(R.layout.roomdialog2, null);
+                AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
+                mDialogBuilder.setView(roomdialogView);
+                //final EditText userInput = (EditText) roomdialogView.findViewById(R.id.input_text);
+                final TextView inputX=(EditText) roomdialogView.findViewById((R.id.inputX));
+                final TextView inputY=(EditText) roomdialogView.findViewById((R.id.inputY));
+
+
+                mDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        //Corners = Integer.parseInt(userInput.getText().toString());
+                                        gridValueX=Integer.parseInt(inputX.getText().toString());
+                                        gridValueY=Integer.parseInt(inputY.getText().toString());
+                                        pointImageWidth = roomImageView.getWidth();
+                                        pointImageHeight = roomImageView.getHeight();
+                                        roomImageView.valueX=gridValueX;
+                                        roomImageView.valueY=gridValueY;
+                                        roomImageView.height=pointImageHeight;
+                                        roomImageView.width=pointImageWidth;
+
+                                        arg0.setClickable(false);
+
+
+                                    }
+                                })
+                        .setNegativeButton("Отмена",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alertDialog = mDialogBuilder.create();
+
+                //и отображаем его:
+                alertDialog.show();
+                invalidateOptionsMenu();
+            }
+        });
 
 
         Room.setOnClickListener(new View.OnClickListener() {
@@ -484,6 +533,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Bitmap GDOPbitmap;
         Bitmap bitmapAlpha;
         double[][] GDOP;
+        public int height;
+        public int width;
+        public int ScreenStep = 100;
+        public int gridcountX=8;
+        private RoomImageView roomImageView;
+        public int gridcountY=18;
+        public int valueX;
+        public int valueY;
         boolean redrawGDOP;
         //ReturnCorner Corner = new ReturnCorner();
 
@@ -685,6 +742,46 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                  //   canvas.drawLine(CornerList.get(flag + 1).x, CornerList.get(flag + 1).y, CornerList.get(0).x, CornerList.get(0).y, RoomLine);
                     CornerList.add(CornerList.get(0));
                 }
+            }
+
+
+
+
+
+            final Paint paint4 = new Paint();
+            paint4.setColor(Color.DKGRAY);
+            paint4.setStrokeWidth(3);
+
+            final Paint paint1 = new Paint();
+            paint1.setColor(Color.BLACK);
+            paint1.setStrokeWidth(8);
+
+
+            Paint shadowPaint = new Paint();
+            shadowPaint.setTextSize(40.0f);
+            shadowPaint.setShadowLayer(00.0f, 0.0f, 0.0f, Color.BLACK);
+
+
+            canvas.drawText(Integer.toString(0),50,1850,shadowPaint);
+            canvas.drawLine(0,1800,width,1800,paint1 );//ох
+            canvas.drawLine(100,0,100,height,paint1 );//оу
+
+            for (int i = 0; i <= height-200; i += ScreenStep) { // Горизонтальные линии
+                canvas.drawText(String.valueOf(valueY-valueY/gridcountY*i/ScreenStep), 5, i +110, shadowPaint);
+                //canvas.drawText(String.valueOf(pointImageHeight - 50), 5, i + 10, shadowPaint);
+            }
+
+            for (int i = 0; i <= width-200; i += ScreenStep) { // Вертикальные линии
+                canvas.drawText(String.valueOf(valueX-valueX/gridcountX*i/ScreenStep),870-i,1850,shadowPaint);
+                //canvas.drawText(String.valueOf(pointImageWidth - 100),i+170,1850,shadowPaint);
+            }
+
+            for (int i = 0; i <= height; i += ScreenStep) { // Вертикальные линии
+                canvas.drawLine(100, i, width, i, paint4);
+            }
+
+            for (int i = 0; i <= width; i += ScreenStep) {// Горизонтальные линии
+                canvas.drawLine(i, 0, i, 1800, paint4);
             }
 
             /*Paint RoomLine = new Paint();

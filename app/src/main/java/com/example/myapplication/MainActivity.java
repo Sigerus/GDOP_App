@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -50,9 +51,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     EditText Beacons;
     Switch Switch;
     Button Ok;
-    Button Plus;
+    Button PlusBeacon;
     Button Go;
     Button KO;
+    Button PlusCorner;
     //////////////////////////////////////////////////
     Button Room;
     final Context context = this;
@@ -82,6 +84,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     String MoveTouch = "";
     public static int Key = 0;
     public static int Corners = 0;
+    public static int Cornerflag = 0;
     private ImageView drawingImageView;
     public static boolean FlagMethod = true;
     public boolean indintersection = true;
@@ -102,10 +105,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Beacons = findViewById(R.id.editText3);
         Ok = findViewById(R.id.button);
         Switch = findViewById(R.id.switch2);
-        Plus = findViewById(R.id.button2);
+        PlusBeacon = findViewById(R.id.button2);
         Go = findViewById(R.id.button3);
         Room = findViewById(R.id.button5);
         KO = findViewById(R.id.button4);
+        PlusCorner = findViewById(R.id.button4);
 
         roomImageView = (RoomImageView) findViewById(R.id.imageView);
         roomImageView.setOnTouchListener(this);
@@ -142,12 +146,21 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         .setCancelable(false)
                         .setPositiveButton("OK",
                                 new DialogInterface.OnClickListener() {
+                                    @SuppressLint("LongLogTag")
                                     public void onClick(DialogInterface dialog, int id) {
                                         //Вводим текст и отображаем в строке ввода на основном экране:
                                         Corners = Integer.parseInt(userInput.getText().toString());
                                         if(Corners > 2) {
                                             FlagRoom = true;
                                         }
+                                        else if (Corners == 0) {
+                                            // tv.setText("Введите количество маяков");
+                                            FlagRoom = false;
+                                            Log.d("Введите количество маяков", String.valueOf(SystemClock.elapsedRealtimeNanos()));
+                                        }
+                                        //Cornerflag += Integer.parseInt(Beacons.getText().toString());
+                                        userInput.setKeyListener(null);
+                                        //FlagRoom = false;
                                     }
                                 })
                         .setNegativeButton("Отмена",
@@ -165,10 +178,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         });
 
         Ok.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("LongLogTag")
             @Override
             public void onClick(View v) {
                 if (Beacons.getText().toString().equals("") || Beacons.getText().toString().equals("0")) {
-                    tv.setText("Введите количество маяков");
+                   // tv.setText("Введите количество маяков");
+                    Log.d("Введите количество маяков", String.valueOf(SystemClock.elapsedRealtimeNanos()));
                 } else {
                     Key += Integer.parseInt(Beacons.getText().toString());
                     Beacons.setKeyListener(null);
@@ -178,7 +193,17 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
         });
 
-        Plus.setOnClickListener(new View.OnClickListener() {
+        /*PlusCorner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Corners > 3) {
+                    Cornerflag += 1;
+                    FlagRoom = false;
+                }
+            }
+        });*/
+
+        PlusBeacon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Key += 1;
@@ -290,23 +315,26 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                                 GDOPscreen[i][j] = 0;
                             }
                         } else {
+                            if (roomImageView.TruePointList.size() >= 3) {
+                                double X1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).x;
+                                double Y1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).y;
+                                double SQRT1 = 0;
+                                double SQRT2 = 0;
+                                while (k < roomImageView.TruePointList.size() - 1) {
+                                    SQRT1 = (sqrt(pow((X - SatPos[0][k]), 2) + pow((Y - SatPos[1][k]), 2)));
+                                    SQRT2 = (sqrt(pow((X - X1), 2) + pow((Y - Y1), 2)));
+                                    H.set(k, 0, (((X - SatPos[0][k]) / SQRT1) - ((X - X1) / SQRT2)));
+                                    H.set(k, 1, (((Y - SatPos[1][k]) / SQRT1) - ((Y - Y1) / SQRT2)));
+                                    k += 1;
 
-                            double X1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).x;
-                            double Y1 = roomImageView.TruePointList.get(roomImageView.TruePointList.size() - 1).y;
-                            double SQRT1 = 0;
-                            double SQRT2 = 0;
-                                    while (k < roomImageView.TruePointList.size() - 1) {
-                                        SQRT1 = (sqrt(pow((X - SatPos[0][k]),2) + pow((Y - SatPos[1][k]),2)));
-                                        SQRT2 = (sqrt(pow((X - X1),2) + pow((Y - Y1),2)));
-                                        H.set(k,0,(((X - SatPos[0][k])/SQRT1) - ((X - X1)/SQRT2)));
-                                        H.set(k,1,(((Y - SatPos[1][k])/SQRT1) - ((Y - Y1)/SQRT2)));
-                                        k += 1;
-
-                                    }
-                                    k = 0;
-                                    //Matrix A = new Matrix(H);
-                                    GDOPscreen[i][j] = sqrt(((H.transpose().times(H)).inverse()).trace());
                                 }
+                                k = 0;
+                                //Matrix A = new Matrix(H);
+                                GDOPscreen[i][j] = sqrt(((H.transpose().times(H)).inverse()).trace());
+                            } else {
+                                GDOPscreen[i][j] = 0;
+                            }
+                        }
                         roomImageView.TruePointList.clear();
 
                             }
@@ -452,10 +480,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 if (FlagRoom) {
-                    if (roomImageView.CornerList.size() != Corners) {
+
+                    if (roomImageView.CornerList.size() != Corners + 1) {
+                        //    for(int j = 0; j < roomImageView.CornerList.size(); j++){
                         Touch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
-                        roomImageView.CornerList.add(new Point(getX, getY));
+                      //  if(!((roomImageView.CornerList.get(j).x == getX) && (roomImageView.CornerList.get(j).y == getY)) || j == 0) {
+                            roomImageView.CornerList.add(new Point(getX, getY));
+                       // }
+
                         roomImageView.invalidateImage();
+                   // }
                     } else {
                         Touch = "X: " + (getX/* - 2*/) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";
                     }
@@ -476,56 +510,75 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE: {
                 if(!FlagRoom) {
                     for (int i = 0; i < roomImageView.PointList.size(); i++) {
-                        int offsetX = abs(getX - roomImageView.PointList.get(i).x);
-                        int offsetY = abs(getY - roomImageView.PointList.get(i).y);
-                        if (offsetX < 50 && offsetY < 50) {
-                            if (getX < 0) {
-                                roomImageView.PointList.get(i).x = 0;
-                            } else if (getX > roomImageView.getWidth()) {
-                                roomImageView.PointList.get(i).x = roomImageView.getWidth();
-                                roomImageView.PointList.get(i).y = getY;
-                            } else if (getY < 0) {
-                                roomImageView.PointList.get(i).y = 0;
-                            //} else if (roomImageView.PointList.get(i).x > ) {
-                            //    roomImageView.PointList.get(i).y = 0;
-                            } else if (getY > roomImageView.getHeight()) {
-                                roomImageView.PointList.get(i).y = roomImageView.getHeight();
-                                roomImageView.PointList.get(i).x = getX;
-                            } else {
-                                roomImageView.PointList.get(i).x = getX;
-                                roomImageView.PointList.get(i).y = getY;
-                            }
+                        for(int j = 0; j < roomImageView.PointList.size(); j++) {
+                            int offsetX = abs(getX - roomImageView.PointList.get(i).x);
+                            int offsetY = abs(getY - roomImageView.PointList.get(i).y);
+                            if (offsetX < 50 && offsetY < 50) {
+                                if (getX < 0) {
+                                    roomImageView.PointList.get(i).x = 0;
+                                } else if (getX > roomImageView.getWidth()) {
+                                    roomImageView.PointList.get(i).x = roomImageView.getWidth();
+                                    roomImageView.PointList.get(i).y = getY;
+                                } else if (getY < 0) {
+                                    roomImageView.PointList.get(i).y = 0;
+                                    //} else if (roomImageView.PointList.get(i).x > ) {
+                                    //    roomImageView.PointList.get(i).y = 0;
+                                } else if (getY > roomImageView.getHeight()) {
+                                    roomImageView.PointList.get(i).y = roomImageView.getHeight();
+                                    roomImageView.PointList.get(i).x = getX;
+                                } else {
+                                    roomImageView.PointList.get(i).x = getX;
+                                    roomImageView.PointList.get(i).y = getY;
+                                }
+                                if(i != j)
+                                {
+                                    if((roomImageView.PointList.get(j).x == getX) && (roomImageView.PointList.get(j).y == getY))
+                                    {
+                                        roomImageView.PointList.get(i).x = getX + 50;
+                                        roomImageView.PointList.get(i).y = getY + 50;
+                                    }
+                                }
+
+
                             /*for (int j = 0; j < roomImageView.PointList.size(); j++) {
                                 if ((roomImageView.PointList.get(i).x == roomImageView.PointList.get(j).x) && (roomImageView.PointList.get(i).y == roomImageView.PointList.get(j).y)) {
 
                                 }
                             }*/
-
+                            }
                         }
                         roomImageView.invalidateImage();
                     }
                 } else {
                     for (int i = 0; i < roomImageView.CornerList.size(); i++) {
-                        int offsetX = abs(getX - roomImageView.CornerList.get(i).x);
-                        int offsetY = abs(getY - roomImageView.CornerList.get(i).y);
-                        if (offsetX < 50 && offsetY < 50) {
-                            if (getX < 0) {
-                                roomImageView.CornerList.get(i).x = 0;
-                            } else if (getX > roomImageView.getWidth()) {
-                                roomImageView.CornerList.get(i).x = roomImageView.getWidth();
-                                roomImageView.CornerList.get(i).y = getY;
-                            } else if (getY < 0) {
-                                roomImageView.CornerList.get(i).y = 0;
-                            } else if (getY > roomImageView.getHeight()) {
-                                roomImageView.CornerList.get(i).y = roomImageView.getHeight();
-                                roomImageView.CornerList.get(i).x = getX;
-                            } else {
-                                roomImageView.CornerList.get(i).x = getX;
-                                roomImageView.CornerList.get(i).y = getY;
-                            }
+                        for(int j = 0; j < roomImageView.CornerList.size(); j++) {
+                            int offsetX = abs(getX - roomImageView.CornerList.get(i).x);
+                            int offsetY = abs(getY - roomImageView.CornerList.get(i).y);
+                            if (offsetX < 50 && offsetY < 50) {
+                                if (getX < 0) {
+                                    roomImageView.CornerList.get(i).x = 0;
+                                } else if (getX > roomImageView.getWidth()) {
+                                    roomImageView.CornerList.get(i).x = roomImageView.getWidth();
+                                    roomImageView.CornerList.get(i).y = getY;
+                                } else if (getY < 0) {
+                                    roomImageView.CornerList.get(i).y = 0;
+                                } else if (getY > roomImageView.getHeight()) {
+                                    roomImageView.CornerList.get(i).y = roomImageView.getHeight();
+                                    roomImageView.CornerList.get(i).x = getX;
+                                } else {
+                                    roomImageView.CornerList.get(i).x = getX;
+                                    roomImageView.CornerList.get(i).y = getY;
+                                }
+                                if (i != j) {
+                                    if ((roomImageView.CornerList.get(j).x == getX) && (roomImageView.CornerList.get(j).y == getY)) {
+                                        roomImageView.CornerList.get(i).x = getX + 50;
+                                        roomImageView.CornerList.get(i).y = getY + 50;
+                                    }
+                                }
 
+                            }
+                            roomImageView.invalidateImage();
                         }
-                        roomImageView.invalidateImage();
                     }
                 }
                 MoveTouch = "X: " + (getX - 2) + "\n" + "Y: " + (abs(getY - 1850)) + "\n";

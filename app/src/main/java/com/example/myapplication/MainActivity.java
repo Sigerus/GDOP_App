@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     Button ButtonSt;
 
     //////////////////////////////////////////////////
-    Button Room;
+    Button OXOY;
     final Context context = this;
     public boolean FlagRoom = false;
     /////////////////////////////////////////////////
@@ -92,7 +92,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Switch = findViewById(R.id.switch2);
         Plus = findViewById(R.id.button2);
         Go = findViewById(R.id.button3);
-        Room = findViewById(R.id.room);
+        OXOY = findViewById(R.id.room);
         //tv.setOnTouchListener(this);
         //setContentView(tv);
 
@@ -122,11 +122,11 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             }
         });
 
-        Room.setOnClickListener(new View.OnClickListener() {
+        OXOY.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View arg0) {
                 LayoutInflater li = LayoutInflater.from(context);
-                View roomdialogView = li.inflate(R.layout.roomdialog, null);
+                View roomdialogView = li.inflate(R.layout.roomdialog2, null);
                 AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
                 mDialogBuilder.setView(roomdialogView);
                 //final EditText userInput = (EditText) roomdialogView.findViewById(R.id.input_text);
